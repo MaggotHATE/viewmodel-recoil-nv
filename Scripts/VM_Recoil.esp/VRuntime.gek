@@ -30,6 +30,7 @@ float vWeightInfluenceV
 float vWeightInfluenceH
 float vIsRandomized
 float vWeaponDamageCoeff
+float vWeaponDamageCoeffH
 
 float xSpeed
 
@@ -43,6 +44,7 @@ begin gamemode
 		set vVerticalIntensity to GetINIFloat "General:vVerticalIntensity" "VM_Recoil.ini"
 		set vHorizontalIntensity to GetINIFloat "General:vHorizontalIntensity" "VM_Recoil.ini"
 		set vWeaponDamageCoeff to GetINIFloat "General:vWeaponDamageCoeff" "VM_Recoil.ini"
+		set vWeaponDamageCoeffH to GetINIFloat "General:vWeaponDamageCoeffH" "VM_Recoil.ini"
 		set vStrengthCoeffV to GetINIFloat "Stats:vStrengthCoeffV" "VM_Recoil.ini"
 		set vStrengthCoeffH to GetINIFloat "Stats:vStrengthCoeffH" "VM_Recoil.ini"
 		set vWeightInfluenceV to GetINIFloat "Stats:vWeightInfluenceV" "VM_Recoil.ini"

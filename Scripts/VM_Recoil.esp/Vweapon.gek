@@ -21,6 +21,7 @@ float DefZ
 float vVInt
 float vHInt
 float vWDamCoeff
+float vWDamCoeffH
 float vSCoeffV
 float vSCoeffH
 float vWInfV
@@ -42,6 +43,7 @@ begin Function {rWeapon}
 			set vVInt to GetINIFloat "General:vVerticalIntensity" "VM_Recoil.ini"
 			set vHInt to GetINIFloat "General:vHorizontalIntensity" "VM_Recoil.ini"
 			set vWDamCoeff to GetINIFloat "General:vWeaponDamageCoeff" "VM_Recoil.ini"
+			set vWDamCoeffH to GetINIFloat "General:vWeaponDamageCoeffH" "VM_Recoil.ini"
 			set vSCoeffV to GetINIFloat "Stats:vStrengthCoeffV" "VM_Recoil.ini"
 			set vSCoeffH to GetINIFloat "Stats:vStrengthCoeffH" "VM_Recoil.ini"
 			set vWInfV to GetINIFloat "Stats:vWeightInfluenceV" "VM_Recoil.ini"
@@ -53,6 +55,7 @@ begin Function {rWeapon}
 			set vVInt to VisuaModellRecoilQuest.vVerticalIntensity
 			set vHInt to VisuaModellRecoilQuest.vHorizontalIntensity
 			set vWDamCoeff to VisuaModellRecoilQuest.vWeaponDamageCoeff
+			set vWDamCoeffH to VisuaModellRecoilQuest.vWeaponDamageCoeffH
 			set vSCoeffV to VisuaModellRecoilQuest.vStrengthCoeffV
 			set vSCoeffH to VisuaModellRecoilQuest.vStrengthCoeffH
 			set vWInfV to VisuaModellRecoilQuest.vWeightInfluenceV
@@ -124,7 +127,7 @@ begin Function {rWeapon}
 		else
 			;                        constant part                   strength-based part       skill-based part                weight-based part (heavy weapons climb less afaik - let's just assume they all are front-heavy)
 			let DefY := (vVInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffV/pStr) + (wDam*vWDamCoeff)*wSkill/pSkill - (GetWeight rWeapon)*(vWInfV/pStr)
-			let DefX := (vHInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffH/pStr) + (wDam*vWDamCoeff)*wSkill/pSkill + (GetWeight rWeapon)*(vWInfH/pStr)
+			let DefX := (vHInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffH/pStr) + vWDamCoeffH*(wDam*vWDamCoeff)*wSkill/pSkill + (GetWeight rWeapon)*(vWInfH/pStr)
 			let DefZ := DefX
 		endif
 		
@@ -134,8 +137,8 @@ begin Function {rWeapon}
 		
 		
 		
-		if DefY > 8 ;no idea why 8, 5 seemed not enough
-			let DefY := 8
+		if DefY > 6 ;no idea why 6, 5 seemed not enough
+			let DefY := 6
 		elseif DefY < 0.2
 			let DefY := 0.2
 		endif
