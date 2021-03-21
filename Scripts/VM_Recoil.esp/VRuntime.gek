@@ -51,7 +51,8 @@ begin gamemode
 	endif
 		
 	;PrintToConsole "timer is: %g" timer	
-
+	if IsPC1stPerson == 1
+	
 		let DefTrans := player.GetNifBlockRotation "Spine0Controller"
 		let VMxI := DefTrans[0]*MinCount + DefA0
 		let VMyI := DefTrans[2]*MinCount + DefA1
@@ -68,7 +69,7 @@ begin gamemode
 		;PrintToConsole "DefA2 is: %g" DefA2
 		;PrintToConsole "DefA1 is: %g" DefA1
 		
-		let MinCount := 0.8
+		let MinCount := 0.85
 		
 		if VMx < 0.0001 && VMx > -0.0001 
 				let VMx := 0
@@ -96,5 +97,7 @@ begin gamemode
 		if DefA2 < 0.0001 && DefA2 > -0.0001 
 			let DefA0 := 0
 		endif
+	endif
+
 	
 end
