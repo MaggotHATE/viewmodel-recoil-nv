@@ -31,6 +31,7 @@ float vWeightInfluenceH
 float vIsRandomized
 float vWeaponDamageCoeff
 
+float xSpeed
 
 
 begin gamemode
@@ -50,9 +51,24 @@ begin gamemode
 		
 	endif
 		
-	;PrintToConsole "timer is: %g" timer	
-	if IsPC1stPerson == 1
+		
 	
+	;PrintToConsole "timer is: %g" timer
+	
+	if IsPC1stPerson == 1
+		
+		
+		;xSpeed is left here for future attempts to make x movement less snappy
+		; if DefA0 > 0.2
+			
+		; elseif DefA0 < -0.2
+			
+		; else
+			; let xSpeed := DefA0
+		; endif
+		
+		;PrintToConsole "xSpeed is: %g" xSpeed
+		
 		let DefTrans := player.GetNifBlockRotation "Spine0Controller"
 		let VMxI := DefTrans[0]*MinCount + DefA0
 		let VMyI := DefTrans[2]*MinCount + DefA1
@@ -65,11 +81,13 @@ begin gamemode
 		let VMy := DefTrans[2]*MinCount + DefA1
 		let VMz := DefTrans[1]*MinCount - DefA2
 		
-			
+		;let xSpeed += 0.1	
 		;PrintToConsole "DefA2 is: %g" DefA2
 		;PrintToConsole "DefA1 is: %g" DefA1
 		
-		let MinCount := 0.85
+		;this multiplier should slowly zero all rotation - but only if we stop firing
+		;useless? probably, but movement feels less snappy monkaHmm
+		let MinCount := 0.9
 		
 		if VMx < 0.0001 && VMx > -0.0001 
 				let VMx := 0

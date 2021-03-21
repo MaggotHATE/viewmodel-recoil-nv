@@ -35,7 +35,8 @@ ref CurAm
 begin Function {rWeapon}
 
 	if IsPC1stPerson == 1
-
+		; I have no idea how reading from ini files affects performance
+		;so I've added this feature for convenience and POSSIBLE optimization
 		if (GetINIFloat "Optimization:vDirectLoad" "VM_Recoil.ini") == 1
 		
 			set vVInt to GetINIFloat "General:vVerticalIntensity" "VM_Recoil.ini"
@@ -80,6 +81,7 @@ begin Function {rWeapon}
 		let wStr := GetWeaponRequiredStrength rWeapon
 		
 		;PrintToConsole "wStr is: %g" wStr
+		
 		if wSkill < 1
 			let wSkill := 1
 		endif
@@ -91,6 +93,8 @@ begin Function {rWeapon}
 			let pSkill := player.getav guns
 		elseif wSkillType == 33
 			let pSkill := player.getav bigguns
+		elseif wSkillType == 35
+			let pSkill := player.getav explosives	
 		endif
 		
 		if pSkill < 0
@@ -102,7 +106,6 @@ begin Function {rWeapon}
 		;PrintToConsole "pSkill is: %g" pSkill
 		
 		let wDam := GetDamage rWeapon
-		
 		;PrintToConsole "wDam is: %g" wDam
 		
 		let randn := getrandompercent
@@ -112,15 +115,16 @@ begin Function {rWeapon}
 			let randn := -1
 		endif
 		
-		if wSkillType !=34 && wSkillType !=41 && wSkillType != 33
+		if wSkillType !=34 && wSkillType !=41 && wSkillType != 33 && wSkillType != 35
 			let DefY := 0
 			let DefX := 0
 			let DefZ := 0
 			
 			;PrintToConsole "wSkillType is: %g" wSkillType
 		else
-			let DefY := (vVInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffV/pStr)+(wDam*vWDamCoeff)*wSkill/pSkill - (GetWeight rWeapon)*(vWInfV/pStr)
-			let DefX := (vHInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffH/pStr)+(wDam*vWDamCoeff)*wSkill/pSkill + (GetWeight rWeapon)*(vWInfH/pStr);*(180/pSkill)*(vSCoeffH/pStr)*(wDam*vWDamCoeff)*wSkill/pSkill + (GetWeight rWeapon)*(vWInfH/pStr)*0.2
+			;                        constant part                   strength-based part       skill-based part                weight-based part (heavy weapons climb less afaik - let's just assume they all are front-heavy)
+			let DefY := (vVInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffV/pStr) + (wDam*vWDamCoeff)*wSkill/pSkill - (GetWeight rWeapon)*(vWInfV/pStr)
+			let DefX := (vHInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffH/pStr) + (wDam*vWDamCoeff)*wSkill/pSkill + (GetWeight rWeapon)*(vWInfH/pStr)
 			let DefZ := DefX
 		endif
 		
@@ -130,26 +134,11 @@ begin Function {rWeapon}
 		
 		
 		
-		if DefY > 8
+		if DefY > 8 ;no idea why 8, 5 seemed not enough
 			let DefY := 8
 		elseif DefY < 0.2
 			let DefY := 0.2
 		endif
-		
-		
-			
-		
-		; if DefX > 2
-			; let DefX := 2
-		; elseif DefX < -2
-			; let DefX := -2
-		; endif
-		
-		; if DefZ > 2
-			; let DefZ := 2
-		; elseif DefZ < -2
-			; let DefZ := -2
-		; endif
 		
 		let VisuaModellRecoilQuest.DefA0 := DefX*randn
 		let VisuaModellRecoilQuest.DefA1 := DefY
@@ -162,7 +151,7 @@ begin Function {rWeapon}
 		let VisuaModellRecoilQuest.timer := 0
 		
 		
-			
+		;old attempts - not compatible with inertia	
 		; if GetPCUsingIronSights
 			; let DefTrans := player.GetNifBlockRotation "Spine0Controller"
 			; let VMx := DefTrans[0] - DefX*randn
