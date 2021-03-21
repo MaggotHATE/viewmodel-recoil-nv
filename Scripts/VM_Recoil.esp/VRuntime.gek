@@ -1,0 +1,100 @@
+scn VRuntime
+
+float VMx
+float VMy
+float VMz
+
+float VMxI
+float VMyI
+float VMzI
+
+float DefA0
+float DefA1
+float DefA2
+
+float MinCount
+
+int Fin
+
+array_var DefRot
+array_var DefTrans
+array_var DefRotIS
+
+float timer
+
+float vVerticalIntensity
+float vHorizontalIntensity
+float vStrengthCoeffV
+float vStrengthCoeffH
+float vWeightInfluenceV
+float vWeightInfluenceH
+float vIsRandomized
+float vWeaponDamageCoeff
+
+
+
+begin gamemode
+
+	if getgameloaded && getgamerestarted
+		
+		SetOnFireWeaponEventHandler Vweapon 1 player
+		
+		set vVerticalIntensity to GetINIFloat "General:vVerticalIntensity" "VM_Recoil.ini"
+		set vHorizontalIntensity to GetINIFloat "General:vHorizontalIntensity" "VM_Recoil.ini"
+		set vWeaponDamageCoeff to GetINIFloat "General:vWeaponDamageCoeff" "VM_Recoil.ini"
+		set vStrengthCoeffV to GetINIFloat "Stats:vStrengthCoeffV" "VM_Recoil.ini"
+		set vStrengthCoeffH to GetINIFloat "Stats:vStrengthCoeffH" "VM_Recoil.ini"
+		set vWeightInfluenceV to GetINIFloat "Stats:vWeightInfluenceV" "VM_Recoil.ini"
+		set vWeightInfluenceH to GetINIFloat "Stats:vWeightInfluenceH" "VM_Recoil.ini"
+		set vIsRandomized to GetINIFloat "Randomization:vIsRandomized" "VM_Recoil.ini"
+		
+	endif
+		
+	;PrintToConsole "timer is: %g" timer	
+
+		let DefTrans := player.GetNifBlockRotation "Spine0Controller"
+		let VMxI := DefTrans[0]*MinCount + DefA0
+		let VMyI := DefTrans[2]*MinCount + DefA1
+		let VMzI := DefTrans[1]*MinCount + DefA2
+
+
+		
+		let DefTrans := player.GetNifBlockRotation "NeckController"
+		let VMx := DefTrans[0]*MinCount + DefA0
+		let VMy := DefTrans[2]*MinCount + DefA1
+		let VMz := DefTrans[1]*MinCount - DefA2
+		
+			
+		;PrintToConsole "DefA2 is: %g" DefA2
+		;PrintToConsole "DefA1 is: %g" DefA1
+		
+		let MinCount := 0.8
+		
+		if VMx < 0.0001 && VMx > -0.0001 
+				let VMx := 0
+		endif
+		if VMy < 0.0001 && VMy > -0.0001 
+			let VMy := 0
+		endif
+		if VMz < 0.0001 && VMz > -0.0001 
+			let VMz := 0
+		endif
+		
+		player.SetNifBlockRotation "NeckController" VMx VMz VMy
+		player.SetNifBlockRotation "Spine0Controller" VMxI VMzI VMyI
+		
+
+		let DefA0 := DefA0 * MinCount
+		let DefA1 := DefA1 * MinCount
+		let DefA2 := DefA2 * MinCount
+		if DefA1 < 0.0001 && DefA1 > -0.0001 
+			let DefA1 := 0
+		endif
+		if DefA0 < 0.0001 && DefA0 > -0.0001 
+			let DefA0 := 0
+		endif
+		if DefA2 < 0.0001 && DefA2 > -0.0001 
+			let DefA0 := 0
+		endif
+	
+end
