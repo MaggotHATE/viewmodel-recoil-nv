@@ -30,6 +30,8 @@ float vIsRand
 
 int randn
 
+float projSpeed
+
 ref CurAm  
 
 
@@ -83,6 +85,7 @@ begin Function {rWeapon}
 		let wSkill := GetWeaponRequiredSkill rWeapon
 		let wStr := GetWeaponRequiredStrength rWeapon
 		
+		
 		;PrintToConsole "wStr is: %g" wStr
 		
 		if wSkill < 1
@@ -109,7 +112,7 @@ begin Function {rWeapon}
 		;PrintToConsole "pSkill is: %g" pSkill
 		
 		let wDam := GetDamage rWeapon
-		PrintToConsole "wDam is: %g" wDam
+		;PrintToConsole "wDam is: %g" wDam
 		
 		let randn := getrandompercent
 		if randn > 50
@@ -125,7 +128,7 @@ begin Function {rWeapon}
 			
 			;PrintToConsole "wSkillType is: %g" wSkillType
 		else
-			;                        constant part                   strength-based part    damage-based part    skill-based part                weight-based part (heavy weapons climb less afaik - let's just assume they all are front-heavy)
+			;                        constant part                   strength-based part    damage and skill-based part                weight-based part (heavy weapons climb less afaik - let's just assume they all are front-heavy)
 			let DefY := (vVInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffV/pStr) + vWDamCoeff*(wDam - wSkill/pSkill) - (GetWeight rWeapon)*(vWInfV/pStr)
 			let DefX := (vHInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffH/pStr) + vWDamCoeff*(wDam*vWDamCoeffH - wSkill/pSkill) + (GetWeight rWeapon)*(vWInfH/pStr)
 			
@@ -135,7 +138,7 @@ begin Function {rWeapon}
 				let DefY := 0.3
 			endif
 			
-			if DefX > 2 ;no idea why 6, 5 seemed not enough
+			if DefX > 2 ;since horizontal movement is snappy, even 2 is too much
 				let DefX := 2
 			elseif DefX < 0.1
 				let DefX := 0.1
@@ -145,8 +148,8 @@ begin Function {rWeapon}
 		endif
 		
 		
-		PrintToConsole "DefX is: %g" DefX
-		PrintToConsole "DefY is: %g" DefY
+		;PrintToConsole "DefX is: %g" DefX
+		;PrintToConsole "DefY is: %g" DefY
 		
 		
 		
