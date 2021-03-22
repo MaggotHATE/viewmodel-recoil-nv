@@ -109,13 +109,13 @@ begin Function {rWeapon}
 		;PrintToConsole "pSkill is: %g" pSkill
 		
 		let wDam := GetDamage rWeapon
-		;PrintToConsole "wDam is: %g" wDam
+		PrintToConsole "wDam is: %g" wDam
 		
 		let randn := getrandompercent
 		if randn > 50
 			let randn := 1
 		elseif vIsRand == 1
-			let randn := -1
+			let randn := -0.1
 		endif
 		
 		if wSkillType !=34 && wSkillType !=41 && wSkillType != 33 && wSkillType != 35
@@ -125,23 +125,32 @@ begin Function {rWeapon}
 			
 			;PrintToConsole "wSkillType is: %g" wSkillType
 		else
-			;                        constant part                   strength-based part       skill-based part                weight-based part (heavy weapons climb less afaik - let's just assume they all are front-heavy)
-			let DefY := (vVInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffV/pStr) + (wDam*vWDamCoeff)*wSkill/pSkill - (GetWeight rWeapon)*(vWInfV/pStr)
-			let DefX := (vHInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffH/pStr) + vWDamCoeffH*(wDam*vWDamCoeff)*wSkill/pSkill + (GetWeight rWeapon)*(vWInfH/pStr)
+			;                        constant part                   strength-based part    damage-based part    skill-based part                weight-based part (heavy weapons climb less afaik - let's just assume they all are front-heavy)
+			let DefY := (vVInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffV/pStr) + vWDamCoeff*(wDam - wSkill/pSkill) - (GetWeight rWeapon)*(vWInfV/pStr)
+			let DefX := (vHInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffH/pStr) + vWDamCoeff*(wDam*vWDamCoeffH - wSkill/pSkill) + (GetWeight rWeapon)*(vWInfH/pStr)
+			
+			if DefY > 6 ;no idea why 6, 5 seemed not enough
+				let DefY := 6
+			elseif DefY < 0.3
+				let DefY := 0.3
+			endif
+			
+			if DefX > 2 ;no idea why 6, 5 seemed not enough
+				let DefX := 2
+			elseif DefX < 0.1
+				let DefX := 0.1
+			endif			
+			
 			let DefZ := DefX
 		endif
 		
 		
-		;PrintToConsole "DefX is: %g" DefX
-		;PrintToConsole "DefY is: %g" DefY
+		PrintToConsole "DefX is: %g" DefX
+		PrintToConsole "DefY is: %g" DefY
 		
 		
 		
-		if DefY > 6 ;no idea why 6, 5 seemed not enough
-			let DefY := 6
-		elseif DefY < 0.2
-			let DefY := 0.2
-		endif
+		
 		
 		let VisuaModellRecoilQuest.DefA0 := DefX*randn
 		let VisuaModellRecoilQuest.DefA1 := DefY
