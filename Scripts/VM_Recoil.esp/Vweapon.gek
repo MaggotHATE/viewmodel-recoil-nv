@@ -32,6 +32,8 @@ int randn
 
 float projSpeed
 
+float fixMult
+
 ref CurAm  
 
 
@@ -112,13 +114,15 @@ begin Function {rWeapon}
 		;PrintToConsole "pSkill is: %g" pSkill
 		
 		let wDam := GetDamage rWeapon
-		;PrintToConsole "wDam is: %g" wDam
+		let projSpeed := IsModLoaded "B42Inertia.esp"
+		;PrintToConsole "B42Inertia is: %g" projSpeed
+		;don't mind the var name, tried to replace damage with projectile params
 		
 		let randn := getrandompercent
 		if randn > 50
 			let randn := 1
 		elseif vIsRand == 1
-			let randn := -0.1
+			let randn := -1
 		endif
 		
 		if wSkillType !=34 && wSkillType !=41 && wSkillType != 33 && wSkillType != 35
@@ -144,7 +148,13 @@ begin Function {rWeapon}
 				let DefX := 0.1
 			endif			
 			
-			let DefZ := DefX
+			if (GetINIFloat "Randomization:vRotationAsVertical" "VM_Recoil.ini") == 0
+				let DefZ := DefX
+			else
+				let DefZ := DefY
+			endif
+			
+			
 		endif
 		
 		
@@ -152,19 +162,32 @@ begin Function {rWeapon}
 		;PrintToConsole "DefY is: %g" DefY
 		
 		
-		
-		
-		
-		let VisuaModellRecoilQuest.DefA0 := DefX*randn
-		let VisuaModellRecoilQuest.DefA1 := DefY
-		if (GetINIFloat "Randomization:vRotationAsVertical" "VM_Recoil.ini") == 0
-			let VisuaModellRecoilQuest.DefA2 := DefZ*randn
+		;this is where we try to take B42 Inertia into account
+		if projSpeed == 1
+			if (FileExists "Config\B42Inertia.ini") && (GetINIFloat "Tuning:bRotationMode" "B42Inertia.ini") > 0
+				let fixMult := 0.812
+				;let DefZ := DefZ*0.2
+			else
+				let fixMult := 0.95
+				let DefZ := DefZ*-1
+			endif
 		else
-			let VisuaModellRecoilQuest.DefA2 := DefY
+			let fixMult := 0.814
+			let DefZ := DefZ*-1
 		endif
-		let VisuaModellRecoilQuest.MinCount := 1
+		
+		;PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
+		
+		let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX*randn;*fixMult
+		let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY;*fixMult
+		
+		let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ;*randn;*fixMult
+		
+		let VisuaModellRecoilQuest.MinCount := fixMult
 		let VisuaModellRecoilQuest.timer := 0
 		
+		;PrintToConsole "VMy is: %g" VisuaModellRecoilQuest.VMy
+		;PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
 		
 		;old attempts - not compatible with inertia	
 		; if GetPCUsingIronSights

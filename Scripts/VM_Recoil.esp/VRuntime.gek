@@ -34,6 +34,7 @@ float vWeaponDamageCoeffH
 
 float xSpeed
 
+float HipNode
 
 begin gamemode
 
@@ -52,59 +53,63 @@ begin gamemode
 		set vIsRandomized to GetINIFloat "Randomization:vIsRandomized" "VM_Recoil.ini"
 		
 	endif
-		
-		
 	
-	;PrintToConsole "timer is: %g" timer
 	
-	if IsPC1stPerson == 1
+
+	
+	if IsPC1stPerson == 1 && DefA0 != 0 && DefA1 != 0 && DefA2 != 0
 		
 		
-		;xSpeed is left here for future attempts to make x movement less snappy
-		; if DefA0 > 0.2
-			
-		; elseif DefA0 < -0.2
-			
-		; else
-			; let xSpeed := DefA0
-		; endif
-		
-		;PrintToConsole "xSpeed is: %g" xSpeed
+
 		
 		let DefTrans := player.GetNifBlockRotation "Spine0Controller"
-		let VMxI := DefTrans[0]*MinCount + DefA0
-		let VMyI := DefTrans[2]*MinCount + DefA1
-		let VMzI := DefTrans[1]*MinCount + DefA2
+		let VMxI := DefTrans[0]*MinCount + DefA0*MinCount
+		let VMyI := DefTrans[2]*MinCount + DefA1*MinCount
+		let VMzI := DefTrans[1]*MinCount + DefA2*MinCount
 
 
+		
 		
 		let DefTrans := player.GetNifBlockRotation "NeckController"
-		let VMx := DefTrans[0]*MinCount + DefA0
-		let VMy := DefTrans[2]*MinCount + DefA1
-		let VMz := DefTrans[1]*MinCount - DefA2
-		
-		;let xSpeed += 0.1	
-		;PrintToConsole "DefA2 is: %g" DefA2
-		;PrintToConsole "DefA1 is: %g" DefA1
-		
+		let VMx := (DefTrans[0]*MinCount + DefA0*MinCount);*HipNode
+		let VMy := (DefTrans[2]*MinCount + DefA1*MinCount);*HipNode
+		let VMz := (DefTrans[1]*MinCount - DefA2*MinCount);*HipNode
+
 		;this multiplier should slowly zero all rotation - but only if we stop firing
 		;useless? probably, but movement feels less snappy monkaHmm
-		let MinCount := 0.9
+		;let MinCount := 0.9
 		
-		if VMx < 0.0001 && VMx > -0.0001 
+		
+		if VMx < 0.00001 && VMx > -0.00001 
 				let VMx := 0
 		endif
-		if VMy < 0.0001 && VMy > -0.0001 
+		if VMy < 0.00001 && VMy > -0.00001 
 			let VMy := 0
 		endif
-		if VMz < 0.0001 && VMz > -0.0001 
+		if VMz < 0.00001 && VMz > -0.00001 
 			let VMz := 0
+		endif
+		if VMx > 10*MinCount
+			set VMx to 10*MinCount
+		elseif VMx < -10*MinCount
+			set VMx to -10*MinCount
+		endif
+		if VMy > 6*MinCount
+			set VMy to 6*MinCount
 		endif
 		
 		player.SetNifBlockRotation "NeckController" VMx VMz VMy
 		player.SetNifBlockRotation "Spine0Controller" VMxI VMzI VMyI
 		
-
+		if VMx > 10*MinCount
+			let DefA0 := 0
+		elseif VMx < -10*MinCount
+			let DefA0 := 0
+		endif
+		if VMy > 6*MinCount
+			let DefA1 := 0
+		endif
+		
 		let DefA0 := DefA0 * MinCount
 		let DefA1 := DefA1 * MinCount
 		let DefA2 := DefA2 * MinCount
