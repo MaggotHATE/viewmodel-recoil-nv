@@ -33,6 +33,12 @@ int randn
 float projSpeed
 
 float fixMult
+float fixMultIS
+
+float vVlowLim
+float vVupLim
+float vHlowLim
+float vHupLim
 
 ref CurAm  
 
@@ -54,6 +60,11 @@ begin Function {rWeapon}
 			set vWInfH to GetINIFloat "Stats:vWeightInfluenceH" "VM_Recoil.ini"
 			set vIsRand to GetINIFloat "Randomization:vIsRandomized" "VM_Recoil.ini"
 			
+			set vVlowLim to GetINIFloat "General:vVerticalLowerLimit" "VM_Recoil.ini"
+			set vVupLim to GetINIFloat "General:vVerticalUpperLimit" "VM_Recoil.ini"
+			set vHlowLim to GetINIFloat "General:vHorizontalLowerLimit" "VM_Recoil.ini"
+			set vHupLim to GetINIFloat "General:vHorizontalUpperLimit" "VM_Recoil.ini"
+			
 		else
 		
 			set vVInt to VisuaModellRecoilQuest.vVerticalIntensity
@@ -65,6 +76,11 @@ begin Function {rWeapon}
 			set vWInfV to VisuaModellRecoilQuest.vWeightInfluenceV
 			set vWInfH to VisuaModellRecoilQuest.vWeightInfluenceH
 			set vIsRand to VisuaModellRecoilQuest.vIsRandomized
+			
+			set vVlowLim to VisuaModellRecoilQuest.vVlowLim
+			set vVupLim to VisuaModellRecoilQuest.vVupLim
+			set vHlowLim to VisuaModellRecoilQuest.vHlowLim
+			set vHupLim to VisuaModellRecoilQuest.vHupLim
 			
 		endif
 		
@@ -118,12 +134,17 @@ begin Function {rWeapon}
 		;PrintToConsole "B42Inertia is: %g" projSpeed
 		;don't mind the var name, tried to replace damage with projectile params
 		
-		let randn := getrandompercent
-		if randn > 50
+		if vIsRand == 1
+			let randn := getrandompercent
+			if randn > 50
+				let randn := 1
+			else
+				let randn := -1
+			endif
+		else
 			let randn := 1
-		elseif vIsRand == 1
-			let randn := -1
 		endif
+		;PrintToConsole "randn is: %g" randn
 		
 		if wSkillType !=34 && wSkillType !=41 && wSkillType != 33 && wSkillType != 35
 			let DefY := 0
@@ -136,16 +157,16 @@ begin Function {rWeapon}
 			let DefY := (vVInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffV/pStr) + vWDamCoeff*(wDam - wSkill/pSkill) - (GetWeight rWeapon)*(vWInfV/pStr)
 			let DefX := (vHInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffH/pStr) + vWDamCoeff*(wDam*vWDamCoeffH - wSkill/pSkill) + (GetWeight rWeapon)*(vWInfH/pStr)
 			
-			if DefY > 6 ;no idea why 6, 5 seemed not enough
-				let DefY := 6
-			elseif DefY < 0.3
-				let DefY := 0.3
+			if DefY > vVupLim 
+				let DefY := vVupLim
+			elseif DefY < vVlowLim
+				let DefY := vVlowLim
 			endif
 			
-			if DefX > 2 ;since horizontal movement is snappy, even 2 is too much
-				let DefX := 2
-			elseif DefX < 0.1
-				let DefX := 0.1
+			if DefX > vHupLim ;since horizontal movement is snappy, even 2 is too much
+				let DefX := vHupLim
+			elseif DefX < vHlowLim
+				let DefX := vHlowLim
 			endif			
 			
 			if (GetINIFloat "Randomization:vRotationAsVertical" "VM_Recoil.ini") == 0
@@ -166,17 +187,27 @@ begin Function {rWeapon}
 		if projSpeed == 1
 			if (FileExists "Config\B42Inertia.ini") && (GetINIFloat "Tuning:bRotationMode" "B42Inertia.ini") > 0
 				let fixMult := 0.812
+				let fixMultIS := 0.95
 				;let DefZ := DefZ*0.2
+			elseif (GetINIFloat "Tuning:bDebugMode" "B42Inertia.ini") == 0 ;this was only for debugging, I got tired of switching plugins off, sorry
+				let fixMult := 0.814
+				let fixMultIS := 0.814
+				;PrintToConsole "fixMultIS is: %g" fixMultIS
 			else
 				let fixMult := 0.95
-				let DefZ := DefZ*-1
+				let fixMultIS := 0.95
+				;let DefZ := DefZ*-1
 			endif
 		else
 			let fixMult := 0.814
-			let DefZ := DefZ*-1
+			let fixMultIS := 0.814
+			;PrintToConsole "fixMultIS is: %g" fixMultIS
+			;let DefZ := DefZ*-1
 		endif
 		
 		;PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
+		;PrintToConsole "VMy is: %g" VisuaModellRecoilQuest.VMy
+		;PrintToConsole "VMyI is: %g" VisuaModellRecoilQuest.VMyI
 		
 		let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX*randn;*fixMult
 		let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY;*fixMult
@@ -184,6 +215,7 @@ begin Function {rWeapon}
 		let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ;*randn;*fixMult
 		
 		let VisuaModellRecoilQuest.MinCount := fixMult
+		let VisuaModellRecoilQuest.MinCountI := fixMultIS
 		let VisuaModellRecoilQuest.timer := 0
 		
 		;PrintToConsole "VMy is: %g" VisuaModellRecoilQuest.VMy

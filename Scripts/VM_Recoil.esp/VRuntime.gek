@@ -13,6 +13,7 @@ float DefA1
 float DefA2
 
 float MinCount
+float MinCountI
 
 int Fin
 
@@ -36,6 +37,11 @@ float xSpeed
 
 float HipNode
 
+float vVlowLim
+float vVupLim
+float vHlowLim
+float vHupLim
+
 begin gamemode
 
 	if getgameloaded && getgamerestarted
@@ -52,6 +58,11 @@ begin gamemode
 		set vWeightInfluenceH to GetINIFloat "Stats:vWeightInfluenceH" "VM_Recoil.ini"
 		set vIsRandomized to GetINIFloat "Randomization:vIsRandomized" "VM_Recoil.ini"
 		
+		set vVlowLim to GetINIFloat "General:vVerticalLowerLimit" "VM_Recoil.ini"
+		set vVupLim to GetINIFloat "General:vVerticalUpperLimit" "VM_Recoil.ini"
+		set vHlowLim to GetINIFloat "General:vHorizontalLowerLimit" "VM_Recoil.ini"
+		set vHupLim to GetINIFloat "General:vHorizontalUpperLimit" "VM_Recoil.ini"
+		
 	endif
 	
 	
@@ -62,15 +73,15 @@ begin gamemode
 		
 
 		
-		let DefTrans := player.GetNifBlockRotation "Spine0Controller"
-		let VMxI := DefTrans[0]*MinCount + DefA0*MinCount
-		let VMyI := DefTrans[2]*MinCount + DefA1*MinCount
-		let VMzI := DefTrans[1]*MinCount + DefA2*MinCount
-
-
-		
-		
 		let DefTrans := player.GetNifBlockRotation "NeckController"
+		let VMxI := DefTrans[0]*MinCountI + DefA0*MinCountI
+		let VMyI := DefTrans[2]*MinCountI + DefA1*MinCountI
+		let VMzI := DefTrans[1]*MinCountI - DefA2*MinCountI
+
+
+		
+		
+		;let DefTrans := player.GetNifBlockRotation "NeckController"
 		let VMx := (DefTrans[0]*MinCount + DefA0*MinCount);*HipNode
 		let VMy := (DefTrans[2]*MinCount + DefA1*MinCount);*HipNode
 		let VMz := (DefTrans[1]*MinCount - DefA2*MinCount);*HipNode
@@ -89,6 +100,16 @@ begin gamemode
 		if VMz < 0.00001 && VMz > -0.00001 
 			let VMz := 0
 		endif
+		if VMxI < 0.00001 && VMxI > -0.00001 
+				let VMxI := 0
+		endif
+		if VMyI < 0.00001 && VMyI > -0.00001 
+			let VMyI := 0
+		endif
+		if VMzI < 0.00001 && VMzI > -0.00001 
+			let VMzI := 0
+		endif	
+		
 		if VMx > 10*MinCount
 			set VMx to 10*MinCount
 		elseif VMx < -10*MinCount
@@ -98,8 +119,20 @@ begin gamemode
 			set VMy to 6*MinCount
 		endif
 		
-		player.SetNifBlockRotation "NeckController" VMx VMz VMy
-		player.SetNifBlockRotation "Spine0Controller" VMxI VMzI VMyI
+		
+		
+		if GetPCUsingIronSights
+			; we don't need to adjust zeroing speed in ironsights. Probably.
+			player.SetNifBlockRotation "NeckController" VMxI VMzI VMyI
+			let DefA0 := DefA0 * MinCountI
+			let DefA1 := DefA1 * MinCountI
+			let DefA2 := DefA2 * MinCountI
+		else
+			player.SetNifBlockRotation "NeckController" VMx VMz VMy
+			let DefA0 := DefA0 * MinCount
+			let DefA1 := DefA1 * MinCount
+			let DefA2 := DefA2 * MinCount			
+		endif
 		
 		if VMx > 10*MinCount
 			let DefA0 := 0
@@ -110,9 +143,7 @@ begin gamemode
 			let DefA1 := 0
 		endif
 		
-		let DefA0 := DefA0 * MinCount
-		let DefA1 := DefA1 * MinCount
-		let DefA2 := DefA2 * MinCount
+		
 		if DefA1 < 0.0001 && DefA1 > -0.0001 
 			let DefA1 := 0
 		endif
