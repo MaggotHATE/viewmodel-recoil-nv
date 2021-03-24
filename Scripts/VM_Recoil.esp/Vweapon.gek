@@ -194,7 +194,7 @@ begin Function {rWeapon}
 				let fixMultIS := 0.814
 				;PrintToConsole "fixMultIS is: %g" fixMultIS
 			else
-				let fixMult := 0.95
+				let fixMult := 0.965
 				let fixMultIS := 0.95
 				;let DefZ := DefZ*-1
 			endif

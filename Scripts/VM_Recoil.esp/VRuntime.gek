@@ -37,6 +37,8 @@ float xSpeed
 
 float HipNode
 
+float IS_Tick
+
 float vVlowLim
 float vVupLim
 float vHlowLim
@@ -71,7 +73,7 @@ begin gamemode
 	if IsPC1stPerson == 1 && DefA0 != 0 && DefA1 != 0 && DefA2 != 0
 		
 		
-
+		let IS_Tick += 1
 		
 		let DefTrans := player.GetNifBlockRotation "NeckController"
 		let VMxI := DefTrans[0]*MinCountI + DefA0*MinCountI
@@ -79,6 +81,8 @@ begin gamemode
 		let VMzI := DefTrans[1]*MinCountI - DefA2*MinCountI
 
 
+		let DefRotIS := player.GetNifBlockRotation "Spine0Controller" ;so what if we want viewmodel walking movement? monkaHmm 
+		; just an idea for now, first test were rather weird 
 		
 		
 		;let DefTrans := player.GetNifBlockRotation "NeckController"
@@ -133,6 +137,7 @@ begin gamemode
 			let DefA1 := DefA1 * MinCount
 			let DefA2 := DefA2 * MinCount			
 		endif
+		
 		
 		if VMx > 10*MinCount
 			let DefA0 := 0
