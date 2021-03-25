@@ -78,7 +78,7 @@ begin gamemode
 	if IsPC1stPerson == 1 && DefA0 != 0 && DefA1 != 0 && DefA2 != 0
 		
 		
-		let IS_Tick += 1
+		
 		
 		let DefTrans := player.GetNifBlockRotation "NeckController"
 		let VMxI := DefTrans[0]*MinCountI + DefA0*MinCountI
