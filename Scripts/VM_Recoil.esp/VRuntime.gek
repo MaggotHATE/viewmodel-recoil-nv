@@ -46,7 +46,7 @@ float vHupLim
 
 begin gamemode
 
-	if getgameloaded && getgamerestarted
+	if getgameloaded
 		
 		SetOnFireWeaponEventHandler Vweapon 1 player
 		
@@ -65,9 +65,14 @@ begin gamemode
 		set vHlowLim to GetINIFloat "General:vHorizontalLowerLimit" "VM_Recoil.ini"
 		set vHupLim to GetINIFloat "General:vHorizontalUpperLimit" "VM_Recoil.ini"
 		
+		;PrintToConsole "getgameloaded is: %g" vVerticalIntensity
+		
+		player.SetNifBlockRotation "NeckController" 0 0 0
 	endif
 	
-	
+	; if player.getdead || player.getisragdolled
+		; player.SetNifBlockRotation "NeckController" 0 0 0
+	; endif
 
 	
 	if IsPC1stPerson == 1 && DefA0 != 0 && DefA1 != 0 && DefA2 != 0
