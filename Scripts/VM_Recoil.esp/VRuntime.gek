@@ -15,10 +15,15 @@ float DefA2
 float MinCount
 float MinCountI
 
+float VM_tx
+float VM_ty
+float VM_tz
+
 int Fin
 
 array_var DefRot
 array_var DefTrans
+array_var DefTransNEW
 array_var DefRotIS
 
 float timer
@@ -68,14 +73,20 @@ begin gamemode
 		;PrintToConsole "getgameloaded is: %g" vVerticalIntensity
 		
 		player.SetNifBlockRotation "NeckController" 0 0 0
+		
+		let HipNode := 0.1
+		let IS_Tick := 0
+		let xSpeed := 0
+		
 	endif
 	
 	; if player.getdead || player.getisragdolled
 		; player.SetNifBlockRotation "NeckController" 0 0 0
 	; endif
-
 	
-	if IsPC1stPerson == 1 && DefA0 != 0 && DefA1 != 0 && DefA2 != 0
+	
+	if IsPC1stPerson == 1 && DefA0 != 0 && DefA1 != 0 && DefA2 != 0 
+		
 		
 		
 		
@@ -143,6 +154,11 @@ begin gamemode
 			let DefA2 := DefA2 * MinCount			
 		endif
 		
+		;player.SetNifBlockTranslation "NeckController" VMy -32 VMx
+		;player.SetNifBlockTranslation "Spine0Controller" VMy VMz VMx
+		;player.SetNifBlockTranslation "InertiaController" VMy 32 VMx
+		
+		;non of these work in ironsighting, sadly
 		
 		if VMx > 10*MinCount
 			let DefA0 := 0
@@ -161,9 +177,19 @@ begin gamemode
 			let DefA0 := 0
 		endif
 		if DefA2 < 0.0001 && DefA2 > -0.0001 
-			let DefA0 := 0
+			let DefA2 := 0
 		endif
 	endif
 
 	
+end
+
+Begin MenuMode ;an attempt to fix VATS-related bug, couldn't reproduce it though
+	If (MenuMode 1056)
+		let DefA1 := 0
+		let DefA0 := 0
+		let DefA2 := 0
+		;PrintToConsole "VATS"
+		;player.SetNifBlockRotation "NeckController" 0 0 0
+	endif	
 end

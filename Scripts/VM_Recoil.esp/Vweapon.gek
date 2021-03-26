@@ -91,6 +91,8 @@ begin Function {rWeapon}
 		; PrintToConsole "vWInfV is: %g" vWInfV
 		; PrintToConsole "vWInfH is: %g" vWInfH
 		; PrintToConsole "vIsRand is: %g" vIsRand
+		
+		
 
 		let pStr := player.getav strength
 		if pStr < 0
@@ -163,7 +165,7 @@ begin Function {rWeapon}
 				let DefY := vVlowLim
 			endif
 			
-			if DefX > vHupLim ;since horizontal movement is snappy, even 2 is too much
+			if DefX > vHupLim 
 				let DefX := vHupLim
 			elseif DefX < vHlowLim
 				let DefX := vHlowLim
@@ -205,18 +207,17 @@ begin Function {rWeapon}
 			;let DefZ := DefZ*-1
 		endif
 		
-		;PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
-		;PrintToConsole "VMy is: %g" VisuaModellRecoilQuest.VMy
-		;PrintToConsole "VMyI is: %g" VisuaModellRecoilQuest.VMyI
 		
-		let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX*randn;*fixMult
-		let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY;*fixMult
-		
-		let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ;*randn;*fixMult
-		
-		let VisuaModellRecoilQuest.MinCount := fixMult
-		let VisuaModellRecoilQuest.MinCountI := fixMultIS
-		let VisuaModellRecoilQuest.timer := 0
+		if (GetVATSMode <= 0) ;an attempt to fix VATS-related bug, couldn't reproduce it though
+			let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX*randn;*fixMult
+			let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY;*fixMult
+			
+			let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ;*randn;*fixMult
+			
+			let VisuaModellRecoilQuest.MinCount := fixMult
+			let VisuaModellRecoilQuest.MinCountI := fixMultIS
+			let VisuaModellRecoilQuest.timer := 0
+		endif
 		
 		;PrintToConsole "VMy is: %g" VisuaModellRecoilQuest.VMy
 		;PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
