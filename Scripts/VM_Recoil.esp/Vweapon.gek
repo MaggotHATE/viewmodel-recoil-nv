@@ -30,7 +30,7 @@ float vIsRand
 
 int randn
 
-float projSpeed
+float HasInertia
 
 float fixMult
 float fixMultIS
@@ -40,7 +40,24 @@ float vVupLim
 float vHlowLim
 float vHupLim
 
-ref CurAm  
+float vConst
+float vStrBased
+float vSkillBased
+float vWeight
+
+float vISconst
+float vISstrBonus
+float vISskillBonus
+float vISlimitMult
+
+ref CurAm
+ref CurAmEff 
+ref CurWepProj 
+int ii
+float CurAmEffVal
+float CurAmEffType
+float projSpeed
+float projDam
 
 
 begin Function {rWeapon}
@@ -106,11 +123,13 @@ begin Function {rWeapon}
 		let wStr := GetWeaponRequiredStrength rWeapon
 		
 		
+		
 		;PrintToConsole "wStr is: %g" wStr
 		
 		if wSkill < 1
 			let wSkill := 1
 		endif
+		
 		
 		
 		if wSkillType == 34
@@ -132,8 +151,9 @@ begin Function {rWeapon}
 		;PrintToConsole "pSkill is: %g" pSkill
 		
 		let wDam := GetDamage rWeapon
-		let projSpeed := IsModLoaded "B42Inertia.esp"
-		;PrintToConsole "B42Inertia is: %g" projSpeed
+		;PrintToConsole "wDam is: %g" wDam
+		let HasInertia := IsModLoaded "B42Inertia.esp"
+		;PrintToConsole "B42Inertia is: %g" HasInertia
 		;don't mind the var name, tried to replace damage with projectile params
 		
 		if vIsRand == 1
@@ -155,9 +175,77 @@ begin Function {rWeapon}
 			
 			;PrintToConsole "wSkillType is: %g" wSkillType
 		else
-			;                        constant part                   strength-based part    damage and skill-based part                weight-based part (heavy weapons climb less afaik - let's just assume they all are front-heavy)
-			let DefY := (vVInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffV/pStr) + vWDamCoeff*(wDam - wSkill/pSkill) - (GetWeight rWeapon)*(vWInfV/pStr)
-			let DefX := (vHInt*(2 - GetWeaponIsAutomatic rWeapon)) + (wStr*vSCoeffH/pStr) + vWDamCoeff*(wDam*vWDamCoeffH - wSkill/pSkill) + (GetWeight rWeapon)*(vWInfH/pStr)
+			let vConst := 2 - GetWeaponIsAutomatic rWeapon
+			
+			set CurAm to GetPlayerCurrentAmmo			
+			set ii to GetNumAmmoEffects CurAm
+			let CurAmEffVal := 1
+			if ii > 0
+				while ii > 0 
+					set CurAmEff to GetNthAmmoEffect CurAm ii
+					let CurAmEffType := GetAmmoEffectTraitNumeric CurAmEff 0
+					if CurAmEffType == 0
+						set CurAmEffVal to GetAmmoEffectTraitNumeric CurAmEff 2
+						;PrintToConsole "CurAmEff!: %g" CurAmEff
+						;PrintToConsole "WARNING!: %g" CurAmEffVal
+; so the problem is, for some ammo types (.357 HP, for example)	this fails to get the value, returning 0
+; however, this check should be anyway, I guess, but if you wonder why you don't see any difference with some ammo types - that's why					
+						if CurAmEffVal <= 0 
+							let CurAmEffVal := 1
+						endif
+					endif
+					let ii -= 1
+				loop
+			endif
+			;PrintToConsole "CurAmEffVal is: %g" CurAmEffVal
+			let wDam *= CurAmEffVal
+			
+			
+			;PrintToConsole "GetNumAmmoEffects is: %g" ii
+			; time to fiddle with explosive weapons
+			if wSkillType == 35
+				set CurWepProj to GetWeaponProjectile rWeapon
+				;let projDam := GetProjectileRefDamage
+				
+				let projSpeed := GetProjectileTraitNumeric CurWepProj 2
+				let projDam := GetProjectileTraitNumeric CurWepProj 9
+				
+				;PrintToConsole "projDam is: %g" projDam
+				;PrintToConsole "projSpeed is: %g" projSpeed
+				
+				let wDam *= projSpeed*projDam
+			endif
+			
+			;PrintToConsole "wDam result is: %g" wDam
+			
+			if GetPCUsingIronSights
+				let vISconst := GetINIFloat "Ironsights:vConstantCoefficient" "VM_Recoil.ini"
+				;let vISstrBonus := GetINIFloat "Ironsights:vIronsightsStrengthBonus" "VM_Recoil.ini"
+				let vISskillBonus := GetINIFloat "Ironsights:vIronsightsSkillBonus" "VM_Recoil.ini"
+				let vISlimitMult := GetINIFloat "Ironsights:vIronsightsLimitsMultiplier" "VM_Recoil.ini"
+				let vConst *= vISconst
+				;let pStr += vISstrBonus - doesn't work for "front-heavy weapons" part formula, oops 
+				let pSkill += vISskillBonus
+				; and for the limits too
+				let vVupLim *= vISlimitMult
+				let vVlowLim *= vISlimitMult
+				let vHupLim *= vISlimitMult
+				let vHlowLim *= vISlimitMult
+				
+			endif
+			let vStrBased := wStr/pStr
+			let vSkillBased := pSkill/wSkill
+			let vWeight := (GetWeight rWeapon)/pStr
+			
+			; PrintToConsole "vConst is: %g" vConst
+			; PrintToConsole "vStrBased is: %g" vStrBased
+			; PrintToConsole "vSkillBased is: %g" vSkillBased
+			; PrintToConsole "vWeight is: %g" vWeight
+			
+			;           constant part   strength-based part    damage and skill-based part     	weight-based part (heavy weapons climb less afaik - let's just assume they all are front-heavy)
+			let DefY := vVInt*vConst + (vStrBased*vSCoeffV) + (vWDamCoeff*wDam - vSkillBased) - vWeight*vWInfV
+			let DefX := vHInt*vConst + (vStrBased*vSCoeffH) + (vWDamCoeff*wDam*vWDamCoeffH - vSkillBased) + vWeight*vWInfH
+			
 			
 			if DefY > vVupLim 
 				let DefY := vVupLim
@@ -181,12 +269,12 @@ begin Function {rWeapon}
 		endif
 		
 		
-		;PrintToConsole "DefX is: %g" DefX
-		;PrintToConsole "DefY is: %g" DefY
+		; PrintToConsole "DefX is: %g" DefX
+		; PrintToConsole "DefY is: %g" DefY
 		
 		
 		;this is where we try to take B42 Inertia into account
-		if projSpeed == 1
+		if HasInertia == 1
 			if (FileExists "Config\B42Inertia.ini") && (GetINIFloat "Tuning:bRotationMode" "B42Inertia.ini") > 0
 				let fixMult := 0.812
 				let fixMultIS := 0.95
