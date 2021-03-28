@@ -31,6 +31,7 @@ float vIsRand
 int randn
 
 float HasInertia
+float IsVats
 
 float fixMult
 float fixMultIS
@@ -81,6 +82,7 @@ begin Function {rWeapon}
 			set vVupLim to GetINIFloat "General:vVerticalUpperLimit" "VM_Recoil.ini"
 			set vHlowLim to GetINIFloat "General:vHorizontalLowerLimit" "VM_Recoil.ini"
 			set vHupLim to GetINIFloat "General:vHorizontalUpperLimit" "VM_Recoil.ini"
+			set IsVats to GetINIFloat "BUGFIXING:vVATSfix" "VM_Recoil.ini"
 			
 		else
 		
@@ -98,6 +100,7 @@ begin Function {rWeapon}
 			set vVupLim to VisuaModellRecoilQuest.vVupLim
 			set vHlowLim to VisuaModellRecoilQuest.vHlowLim
 			set vHupLim to VisuaModellRecoilQuest.vHupLim
+			set IsVats to VisuaModellRecoilQuest.IsVats
 			
 		endif
 		
@@ -126,8 +129,8 @@ begin Function {rWeapon}
 		
 		;PrintToConsole "wStr is: %g" wStr
 		
-		if wSkill < 1
-			let wSkill := 1
+		if wSkill < 5
+			let wSkill := 5
 		endif
 		
 		
@@ -177,28 +180,30 @@ begin Function {rWeapon}
 		else
 			let vConst := 2 - GetWeaponIsAutomatic rWeapon
 			
-			set CurAm to GetPlayerCurrentAmmo			
-			set ii to GetNumAmmoEffects CurAm
-			let CurAmEffVal := 1
-			if ii > 0
-				while ii > 0 
-					set CurAmEff to GetNthAmmoEffect CurAm ii
-					let CurAmEffType := GetAmmoEffectTraitNumeric CurAmEff 0
-					if CurAmEffType == 0
-						set CurAmEffVal to GetAmmoEffectTraitNumeric CurAmEff 2
+			; set CurAm to GetPlayerCurrentAmmo			
+			; set ii to GetNumAmmoEffects CurAm
+			; let CurAmEffVal := 1
+			; if ii > 0
+				; while ii > 0 
+					; set CurAmEff to GetNthAmmoEffect CurAm ii
+					; let CurAmEffType := GetAmmoEffectTraitNumeric CurAmEff 0
+					; if CurAmEffType == 0
+						; set CurAmEffVal to GetAmmoEffectTraitNumeric CurAmEff 2
 						;PrintToConsole "CurAmEff!: %g" CurAmEff
 						;PrintToConsole "WARNING!: %g" CurAmEffVal
 ; so the problem is, for some ammo types (.357 HP, for example)	this fails to get the value, returning 0
 ; however, this check should be anyway, I guess, but if you wonder why you don't see any difference with some ammo types - that's why					
-						if CurAmEffVal <= 0 
-							let CurAmEffVal := 1
-						endif
-					endif
-					let ii -= 1
-				loop
-			endif
+						; if CurAmEffVal <= 0 
+							; let CurAmEffVal := 1
+						; endif
+					; endif
+					; let ii -= 1
+				; loop
+			; endif
 			;PrintToConsole "CurAmEffVal is: %g" CurAmEffVal
-			let wDam *= CurAmEffVal
+			;let wDam *= CurAmEffVal
+			
+			;temporarily disabled for possible bugfix
 			
 			
 			;PrintToConsole "GetNumAmmoEffects is: %g" ii
@@ -244,7 +249,7 @@ begin Function {rWeapon}
 			
 			;           constant part   strength-based part    damage and skill-based part     	weight-based part (heavy weapons climb less afaik - let's just assume they all are front-heavy)
 			let DefY := vVInt*vConst + (vStrBased*vSCoeffV) + (vWDamCoeff*wDam - vSkillBased) - vWeight*vWInfV
-			let DefX := vHInt*vConst + (vStrBased*vSCoeffH) + (vWDamCoeff*wDam*vWDamCoeffH - vSkillBased) + vWeight*vWInfH
+			let DefX := vHInt*vConst + (vStrBased*vSCoeffH) + (vWDamCoeff*wDam - vSkillBased)*vWDamCoeffH + vWeight*vWInfH
 			
 			
 			if DefY > vVupLim 
@@ -295,8 +300,8 @@ begin Function {rWeapon}
 			;let DefZ := DefZ*-1
 		endif
 		
-		
-		if (GetVATSMode <= 0) ;an attempt to fix VATS-related bug, couldn't reproduce it though
+
+		if (GetVATSMode <= 0) || IsVats == 0 ;an attempt to fix VATS-related bug, couldn't reproduce it though
 			let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX*randn;*fixMult
 			let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY;*fixMult
 			
@@ -307,8 +312,8 @@ begin Function {rWeapon}
 			let VisuaModellRecoilQuest.timer := 0
 		endif
 		
-		;PrintToConsole "VMy is: %g" VisuaModellRecoilQuest.VMy
-		;PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
+		; PrintToConsole "VMy is: %g" VisuaModellRecoilQuest.VMy
+		; PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
 		
 		;old attempts - not compatible with inertia	
 		; if GetPCUsingIronSights

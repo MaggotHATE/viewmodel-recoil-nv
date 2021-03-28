@@ -49,6 +49,8 @@ float vVupLim
 float vHlowLim
 float vHupLim
 
+float IsVats
+
 begin gamemode
 
 	if getgameloaded
@@ -69,6 +71,7 @@ begin gamemode
 		set vVupLim to GetINIFloat "General:vVerticalUpperLimit" "VM_Recoil.ini"
 		set vHlowLim to GetINIFloat "General:vHorizontalLowerLimit" "VM_Recoil.ini"
 		set vHupLim to GetINIFloat "General:vHorizontalUpperLimit" "VM_Recoil.ini"
+		set IsVats to GetINIFloat "BUGFIXING:vVATSfix" "VM_Recoil.ini"
 		
 		;PrintToConsole "getgameloaded is: %g" vVerticalIntensity
 		
@@ -185,7 +188,7 @@ begin gamemode
 end
 
 Begin MenuMode ;an attempt to fix VATS-related bug, couldn't reproduce it though
-	If (MenuMode 1056)
+	If (MenuMode 1056) && IsVats > 0
 		let DefA1 := 0
 		let DefA0 := 0
 		let DefA2 := 0
