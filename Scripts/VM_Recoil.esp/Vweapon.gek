@@ -1,6 +1,6 @@
 scn Vweapon
 
-ref rWeapon
+ref rVM_Weapon
 
 float pSkill
 float pStr
@@ -28,7 +28,10 @@ float vWInfV
 float vWInfH
 float vIsRand
 
-int randn
+float randn
+float randWY
+float randWZ
+float Ystack
 
 float HasInertia
 float IsVats
@@ -60,8 +63,14 @@ float CurAmEffType
 float projSpeed
 float projDam
 
+float vUseIndRec
+string_var WeaponSname
+string_var WeaponSnameHAS
+float WeaponSnameHASX
+float WSR_aggMastery
+float vcIS
 
-begin Function {rWeapon}
+begin Function {rVM_Weapon}
 
 	if IsPC1stPerson == 1
 		; I have no idea how reading from ini files affects performance
@@ -83,6 +92,7 @@ begin Function {rWeapon}
 			set vHlowLim to GetINIFloat "General:vHorizontalLowerLimit" "VM_Recoil.ini"
 			set vHupLim to GetINIFloat "General:vHorizontalUpperLimit" "VM_Recoil.ini"
 			set IsVats to GetINIFloat "BUGFIXING:vVATSfix" "VM_Recoil.ini"
+			set vUseIndRec to GetINIFloat "Individual:vUseIndividualRecoil" "VM_Recoil.ini"
 			
 		else
 		
@@ -121,13 +131,26 @@ begin Function {rWeapon}
 			let pStr := 11
 		endif
 		
-		let wSkillType := GetWeaponSkill rWeapon
-		let wSkill := GetWeaponRequiredSkill rWeapon
-		let wStr := GetWeaponRequiredStrength rWeapon
+		let wSkillType := GetWeaponSkill rVM_Weapon
+		let wSkill := GetWeaponRequiredSkill rVM_Weapon
+		let wStr := GetWeaponRequiredStrength rVM_Weapon
 		
 		
 		
 		;PrintToConsole "wStr is: %g" wStr
+		
+		if vUseIndRec
+			set WeaponSname to GetEditorID rVM_Weapon
+			let WeaponSname :="WeaponVRecoil\" + WeaponSname + ".ini"
+			let WeaponSnameHAS :="Config\" + WeaponSname
+			let WeaponSnameHASX := FileExists $WeaponSnameHAS
+			;Print "rVM_Weapon is: " + $WeaponSname
+			;Print "WeaponSnameHAS is: " + $WeaponSnameHAS
+			;Print "WeaponSnameHAS is: Config\WeaponVRecoil\WeapAKMS.ini"
+			
+			;Print "FileExists is: " + $WeaponSnameHASX
+			;Print "vUseIndRec is: " + $vUseIndRec
+		endif
 		
 		if wSkill < 5
 			let wSkill := 5
@@ -153,22 +176,13 @@ begin Function {rWeapon}
 		
 		;PrintToConsole "pSkill is: %g" pSkill
 		
-		let wDam := GetDamage rWeapon
+		let wDam := GetDamage rVM_Weapon
 		;PrintToConsole "wDam is: %g" wDam
 		let HasInertia := IsModLoaded "B42Inertia.esp"
 		;PrintToConsole "B42Inertia is: %g" HasInertia
 		;don't mind the var name, tried to replace damage with projectile params
 		
-		if vIsRand == 1
-			let randn := getrandompercent
-			if randn > 50
-				let randn := 1
-			else
-				let randn := -1
-			endif
-		else
-			let randn := 1
-		endif
+		
 		;PrintToConsole "randn is: %g" randn
 		
 		if wSkillType !=34 && wSkillType !=41 && wSkillType != 33 && wSkillType != 35
@@ -178,38 +192,12 @@ begin Function {rWeapon}
 			
 			;PrintToConsole "wSkillType is: %g" wSkillType
 		else
-			let vConst := 2 - GetWeaponIsAutomatic rWeapon
-			
-			; set CurAm to GetPlayerCurrentAmmo			
-			; set ii to GetNumAmmoEffects CurAm
-			; let CurAmEffVal := 1
-			; if ii > 0
-				; while ii > 0 
-					; set CurAmEff to GetNthAmmoEffect CurAm ii
-					; let CurAmEffType := GetAmmoEffectTraitNumeric CurAmEff 0
-					; if CurAmEffType == 0
-						; set CurAmEffVal to GetAmmoEffectTraitNumeric CurAmEff 2
-						;PrintToConsole "CurAmEff!: %g" CurAmEff
-						;PrintToConsole "WARNING!: %g" CurAmEffVal
-; so the problem is, for some ammo types (.357 HP, for example)	this fails to get the value, returning 0
-; however, this check should be anyway, I guess, but if you wonder why you don't see any difference with some ammo types - that's why					
-						; if CurAmEffVal <= 0 
-							; let CurAmEffVal := 1
-						; endif
-					; endif
-					; let ii -= 1
-				; loop
-			; endif
-			;PrintToConsole "CurAmEffVal is: %g" CurAmEffVal
-			;let wDam *= CurAmEffVal
-			
-			;temporarily disabled for possible bugfix
-			
+			let vConst := 2 - GetWeaponIsAutomatic rVM_Weapon
 			
 			;PrintToConsole "GetNumAmmoEffects is: %g" ii
 			; time to fiddle with explosive weapons
 			if wSkillType == 35
-				set CurWepProj to GetWeaponProjectile rWeapon
+				set CurWepProj to GetWeaponProjectile rVM_Weapon
 				;let projDam := GetProjectileRefDamage
 				
 				let projSpeed := GetProjectileTraitNumeric CurWepProj 2
@@ -238,44 +226,132 @@ begin Function {rWeapon}
 				let vHlowLim *= vISlimitMult
 				
 			endif
-			let vStrBased := wStr/pStr
-			let vSkillBased := pSkill/wSkill
-			let vWeight := (GetWeight rWeapon)/pStr
+			let vStrBased := wStr/pStr ; min 0,091 max 10, -
+			let vSkillBased := pSkill/wSkill ; min 0,05 max 22, +
+			let vWeight := (GetWeight rVM_Weapon)/pStr
 			
 			; PrintToConsole "vConst is: %g" vConst
-			; PrintToConsole "vStrBased is: %g" vStrBased
-			; PrintToConsole "vSkillBased is: %g" vSkillBased
+			;PrintToConsole "vStrBased is: %g" vStrBased
+			;PrintToConsole "vSkillBased is: %g" vSkillBased
 			; PrintToConsole "vWeight is: %g" vWeight
 			
 			;           constant part   strength-based part    damage and skill-based part     	weight-based part (heavy weapons climb less afaik - let's just assume they all are front-heavy)
-			let DefY := vVInt*vConst + (vStrBased*vSCoeffV) + (vWDamCoeff*wDam - vSkillBased) - vWeight*vWInfV
-			let DefX := vHInt*vConst + (vStrBased*vSCoeffH) + (vWDamCoeff*wDam - vSkillBased)*vWDamCoeffH + vWeight*vWInfH
 			
+			let WSR_aggMastery := 1/vSkillBased + vStrBased; - ( abs DefY + abs DefX + abs DefZ)
+			;PrintToConsole "WSR_aggMastery is: %g" WSR_aggMastery
 			
-			if DefY > vVupLim 
-				let DefY := vVupLim
-			elseif DefY < vVlowLim
-				let DefY := vVlowLim
-			endif
-			
-			if DefX > vHupLim 
-				let DefX := vHupLim
-			elseif DefX < vHlowLim
-				let DefX := vHlowLim
-			endif			
-			
-			if (GetINIFloat "Randomization:vRotationAsVertical" "VM_Recoil.ini") == 0
-				let DefZ := DefX
+			if vUseIndRec && WeaponSnameHASX
+				
+				let DefY := GetINIFloat "PATTERN:Y" $WeaponSname
+				let DefX := GetINIFloat "PATTERN:X" $WeaponSname
+				let DefZ := GetINIFloat "PATTERN:Z" $WeaponSname
+				
+				
+								
+				
+				if GetPCUsingIronSights
+					let vcIS := GetINIFloat "PATTERN:cIS" $WeaponSname
+					let DefY *= WSR_aggMastery*vcIS
+					let DefX *= WSR_aggMastery*vcIS
+					let DefZ *= WSR_aggMastery*vcIS
+				else 
+					let DefY *= WSR_aggMastery
+					let DefX *= WSR_aggMastery
+					let DefZ *= WSR_aggMastery
+				endif
+				
+				;PrintToConsole "DefX is: %g" DefX
+				;PrintToConsole "DefY is: %g" DefY
+				;PrintToConsole "DefZ is: %g" DefZ
+				
+				let randn := GetINIFloat "PATTERN:dX" $WeaponSname
+				if randn < 0 ; randomization left and right
+					if getrandompercent > 50
+						let randn *= -1
+					endif
+				else ; rand, but still to one side
+					if getrandompercent > 50
+						let randn := 1
+					endif
+				endif
+				
+				let randWY := GetINIFloat "PATTERN:dY" $WeaponSname
+				if randWY < 0 ; pseudo constant recoil
+					if getrandompercent/100 < -1*randWY
+						let DefY := 0
+					endif
+				else  ; rand for one side, but a little
+					if getrandompercent < 50
+						let DefY := DefY + randWY
+					endif
+				endif
+				
+				let randWZ := GetINIFloat "PATTERN:dZ" $WeaponSname
+				
+				if randWZ < 0 ; rand
+					if getrandompercent > 50
+						let randWZ *= -1
+						let DefZ *= randWZ
+					endif
+				else ; like Y
+					if getrandompercent < 50
+						let DefZ := DefZ + randWZ
+					endif
+				endif
+				
+				;PrintToConsole "DefY +randWY is: %g" DefY
+				;PrintToConsole "randWZ is: %g" randWZ
+				
 			else
-				let DefZ := DefY
+				if (GetINIFloat "Individual:vUseOldGenericFormula" "VM_Recoil.ini") == 1
+					let DefY := vVInt*vConst + (vStrBased*vSCoeffV) + (vWDamCoeff*wDam - vSkillBased) - vWeight*vWInfV
+					let DefX := vHInt*vConst + (vStrBased*vSCoeffH) + (vWDamCoeff*wDam - vSkillBased)*vWDamCoeffH + vWeight*vWInfH
+				else
+					let DefY := (vVInt*vConst + vWDamCoeff*wDam - vWeight*vWInfV)*WSR_aggMastery*vSCoeffV
+					let DefX := (vHInt*vConst + vWDamCoeff*wDam*vWDamCoeffH + vWeight*vWInfH)*WSR_aggMastery*vSCoeffH
+					;Print "DefY = " + $(vVInt*vConst) + " + " + $vSCoeffV + " + " + $(vWDamCoeff*wDam) + " - " + $(vWeight*vWInfV)
+				endif
+			
+				if DefY > vVupLim 
+					let DefY := vVupLim
+				elseif DefY < vVlowLim
+					let DefY := vVlowLim
+				endif
+				
+				if DefX > vHupLim 
+					let DefX := vHupLim
+				elseif DefX < vHlowLim
+					let DefX := vHlowLim
+				endif			
+				
+				if (GetINIFloat "Randomization:vRotationAsVertical" "VM_Recoil.ini") == 0 
+					let DefZ := DefX
+				else
+					let DefZ := DefY
+				endif
+				
+				if vIsRand == 1
+					let randn := getrandompercent
+					if randn > 50
+						let randn := 1
+					else
+						let randn := -1
+					endif
+				else
+					let randn := 1
+				endif
+				
+			
 			endif
 			
+			let DefX *= randn
 			
 		endif
 		
 		
 		; PrintToConsole "DefX is: %g" DefX
 		; PrintToConsole "DefY is: %g" DefY
+		; PrintToConsole "DefZ is: %g" DefZ
 		
 		
 		;this is where we try to take B42 Inertia into account
@@ -302,7 +378,7 @@ begin Function {rWeapon}
 		
 
 		if (GetVATSMode <= 0) || IsVats == 0 ;an attempt to fix VATS-related bug, couldn't reproduce it though
-			let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX*randn;*fixMult
+			let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX;*fixMult
 			let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY;*fixMult
 			
 			let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ;*randn;*fixMult
@@ -312,8 +388,8 @@ begin Function {rWeapon}
 			let VisuaModellRecoilQuest.timer := 0
 		endif
 		
-		; PrintToConsole "VMy is: %g" VisuaModellRecoilQuest.VMy
-		; PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
+		 ; PrintToConsole "VMy is: %g" VisuaModellRecoilQuest.VMy
+		 ; PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
 		
 		;old attempts - not compatible with inertia	
 		; if GetPCUsingIronSights

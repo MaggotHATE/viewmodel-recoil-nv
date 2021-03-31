@@ -50,6 +50,7 @@ float vHlowLim
 float vHupLim
 
 float IsVats
+float vUseIndRec
 
 begin gamemode
 
@@ -72,6 +73,7 @@ begin gamemode
 		set vHlowLim to GetINIFloat "General:vHorizontalLowerLimit" "VM_Recoil.ini"
 		set vHupLim to GetINIFloat "General:vHorizontalUpperLimit" "VM_Recoil.ini"
 		set IsVats to GetINIFloat "BUGFIXING:vVATSfix" "VM_Recoil.ini"
+		set vUseIndRec to GetINIFloat "Individual:vUseIndividualRecoil" "VM_Recoil.ini"
 		
 		;PrintToConsole "getgameloaded is: %g" vVerticalIntensity
 		
