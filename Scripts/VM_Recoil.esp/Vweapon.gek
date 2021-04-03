@@ -69,6 +69,10 @@ string_var WeaponSnameHAS
 float WeaponSnameHASX
 float WSR_aggMastery
 float vcIS
+float vFirstShotM
+float vFirstShotR
+float vFirstShotP
+float vFirstShot
 
 begin Function {rVM_Weapon}
 
@@ -93,6 +97,9 @@ begin Function {rVM_Weapon}
 			set vHupLim to GetINIFloat "General:vHorizontalUpperLimit" "VM_Recoil.ini"
 			set IsVats to GetINIFloat "BUGFIXING:vVATSfix" "VM_Recoil.ini"
 			set vUseIndRec to GetINIFloat "Individual:vUseIndividualRecoil" "VM_Recoil.ini"
+			set vFirstShotM to GetINIFloat "Randomization:vFirstShotMultiplier" "VM_Recoil.ini"
+			set vFirstShotP to GetINIFloat "Randomization:vFirstShotPeriod" "VM_Recoil.ini"
+			set vFirstShotR to GetINIFloat "Randomization:vFirstShotRandomization" "VM_Recoil.ini"
 			
 		else
 		
@@ -111,6 +118,10 @@ begin Function {rVM_Weapon}
 			set vHlowLim to VisuaModellRecoilQuest.vHlowLim
 			set vHupLim to VisuaModellRecoilQuest.vHupLim
 			set IsVats to VisuaModellRecoilQuest.IsVats
+			set vUseIndRec to VisuaModellRecoilQuest.vUseIndRec
+			set vFirstShotM to VisuaModellRecoilQuest.vFirstShotM
+			set vFirstShotP to VisuaModellRecoilQuest.vFirstShotP
+			set vFirstShotR to VisuaModellRecoilQuest.vFirstShotR
 			
 		endif
 		
@@ -348,7 +359,30 @@ begin Function {rVM_Weapon}
 			
 		endif
 		
-		
+		let vFirstShot := 1
+		if VisuaModellRecoilQuest.IS_Tick == 0
+			;Print "Ready!"
+			if vFirstShotM > 0 && vFirstShotM != 1
+				;Print "Set!"
+				if vFirstShotR > 0
+					;Print "Gamble..."
+					if vFirstShotR > 0.9
+						let vFirstShotR := 0.9
+					endif 
+					if getrandompercent/100 < vFirstShotR && VisuaModellRecoilQuest.IS_Tick == 0
+							;PrintToConsole "vFirstShotR is: %g" vFirstShotR
+							let vFirstShot := vFirstShotM
+					endif
+				else
+						let vFirstShot := vFirstShotM
+						;Print "First shot!"
+				endif
+			endif
+			
+		else
+			;Print "You're too fast, honey!"
+		endif
+		let VisuaModellRecoilQuest.IS_Tick := vFirstShotP
 		; PrintToConsole "DefX is: %g" DefX
 		; PrintToConsole "DefY is: %g" DefY
 		; PrintToConsole "DefZ is: %g" DefZ
@@ -378,10 +412,10 @@ begin Function {rVM_Weapon}
 		
 
 		if (GetVATSMode <= 0) || IsVats == 0 ;an attempt to fix VATS-related bug, couldn't reproduce it though
-			let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX;*fixMult
-			let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY;*fixMult
+			let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX*vFirstShot;*fixMult
+			let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY*vFirstShot;*fixMult
 			
-			let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ;*randn;*fixMult
+			let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ*vFirstShot;*randn;*fixMult
 			
 			let VisuaModellRecoilQuest.MinCount := fixMult
 			let VisuaModellRecoilQuest.MinCountI := fixMultIS

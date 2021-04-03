@@ -19,6 +19,10 @@ float VM_tx
 float VM_ty
 float VM_tz
 
+float VM_A1_0
+float VM_A1_1
+float VM_A1_2
+
 int Fin
 
 array_var DefRot
@@ -51,6 +55,9 @@ float vHupLim
 
 float IsVats
 float vUseIndRec
+float vFirstShotM
+float vFirstShotR
+float vFirstShotP
 
 begin gamemode
 
@@ -74,6 +81,9 @@ begin gamemode
 		set vHupLim to GetINIFloat "General:vHorizontalUpperLimit" "VM_Recoil.ini"
 		set IsVats to GetINIFloat "BUGFIXING:vVATSfix" "VM_Recoil.ini"
 		set vUseIndRec to GetINIFloat "Individual:vUseIndividualRecoil" "VM_Recoil.ini"
+		set vFirstShotM to GetINIFloat "Randomization:vFirstShotMultiplier" "VM_Recoil.ini"
+		set vFirstShotR to GetINIFloat "Randomization:vFirstShotRandomization" "VM_Recoil.ini"
+		set vFirstShotP to GetINIFloat "Randomization:vFirstShotPeriod" "VM_Recoil.ini"
 		
 		;PrintToConsole "getgameloaded is: %g" vVerticalIntensity
 		
@@ -89,6 +99,21 @@ begin gamemode
 		; player.SetNifBlockRotation "NeckController" 0 0 0
 	; endif
 	
+	; let DefTransNEW := player.GetNifBlockRotation "Bip01 ThighsMain"
+	; Print "DefTransNEW 0 is: " + $DefTransNEW[0]
+	; Print "DefTransNEW 1 is: " + $DefTransNEW[1]
+	; Print "DefTransNEW 2 is: " + $DefTransNEW[2]
+	; let VMxI := DefTrans[0]*MinCountI + DefA0*MinCountI
+	; let VMyI := DefTrans[2]*MinCountI + DefA1*MinCountI
+	; let VMzI := DefTrans[1]*MinCountI - DefA2*MinCountI
+	;player.SetNifBlockRotation "Bip01 ThighsMain" 0 0 0
+	if IS_Tick > 0
+		let IS_Tick *= MinCountI
+		;Print "IS_Tick is: " + $IS_Tick
+	endif
+	if IS_Tick < 0.001
+			let IS_Tick := 0
+	endif
 	
 	if IsPC1stPerson == 1 && DefA0 != 0 && DefA1 != 0 && DefA2 != 0 
 		
@@ -115,6 +140,20 @@ begin gamemode
 		;useless? probably, but movement feels less snappy monkaHmm
 		;let MinCount := 0.9
 		
+		let DefTransNEW := player.GetNifBlockRotation "Bip01 ThighsMain"
+		let VM_A1_0 := DefTrans[0]*MinCountI + DefA0*MinCountI ;-90
+		let VM_A1_2 := DefTrans[2]*MinCountI + DefA1*MinCountI ;-90
+		let VM_A1_1 := DefTrans[1]*MinCountI - DefA2*MinCountI 
+		
+		if VM_A1_0 < -89.99999 && VM_A1_0 > -90.00001  
+				let VM_A1_0 := -90
+		endif
+		if VM_A1_2 < -89.99999 && VM_A1_2 > -90.00001 
+			let VM_A1_2 := -90
+		endif
+		if VM_A1_1 < 0.00001 && VM_A1_1 > -0.00001 
+			let VM_A1_1 := 0
+		endif
 		
 		if VMx < 0.00001 && VMx > -0.00001 
 				let VMx := 0
@@ -159,6 +198,7 @@ begin gamemode
 			let DefA2 := DefA2 * MinCount			
 		endif
 		
+		;player.SetNifBlockRotation "Bip01 ThighsMain" VM_A1_0 VM_A1_1 VM_A1_2
 		;player.SetNifBlockTranslation "NeckController" VMy -32 VMx
 		;player.SetNifBlockTranslation "Spine0Controller" VMy VMz VMx
 		;player.SetNifBlockTranslation "InertiaController" VMy 32 VMx
