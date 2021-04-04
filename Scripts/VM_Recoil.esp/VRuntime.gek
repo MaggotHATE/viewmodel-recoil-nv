@@ -58,6 +58,7 @@ float vUseIndRec
 float vFirstShotM
 float vFirstShotR
 float vFirstShotP
+float vUseAmmoPseudo
 
 begin gamemode
 
@@ -81,6 +82,7 @@ begin gamemode
 		set vHupLim to GetINIFloat "General:vHorizontalUpperLimit" "VM_Recoil.ini"
 		set IsVats to GetINIFloat "BUGFIXING:vVATSfix" "VM_Recoil.ini"
 		set vUseIndRec to GetINIFloat "Individual:vUseIndividualRecoil" "VM_Recoil.ini"
+		set vUseAmmoPseudo to GetINIFloat "Stats:vUseAmmoPseudoCalc" "VM_Recoil.ini"
 		set vFirstShotM to GetINIFloat "Randomization:vFirstShotMultiplier" "VM_Recoil.ini"
 		set vFirstShotR to GetINIFloat "Randomization:vFirstShotRandomization" "VM_Recoil.ini"
 		set vFirstShotP to GetINIFloat "Randomization:vFirstShotPeriod" "VM_Recoil.ini"
@@ -140,20 +142,6 @@ begin gamemode
 		;useless? probably, but movement feels less snappy monkaHmm
 		;let MinCount := 0.9
 		
-		let DefTransNEW := player.GetNifBlockRotation "Bip01 ThighsMain"
-		let VM_A1_0 := DefTrans[0]*MinCountI + DefA0*MinCountI ;-90
-		let VM_A1_2 := DefTrans[2]*MinCountI + DefA1*MinCountI ;-90
-		let VM_A1_1 := DefTrans[1]*MinCountI - DefA2*MinCountI 
-		
-		if VM_A1_0 < -89.99999 && VM_A1_0 > -90.00001  
-				let VM_A1_0 := -90
-		endif
-		if VM_A1_2 < -89.99999 && VM_A1_2 > -90.00001 
-			let VM_A1_2 := -90
-		endif
-		if VM_A1_1 < 0.00001 && VM_A1_1 > -0.00001 
-			let VM_A1_1 := 0
-		endif
 		
 		if VMx < 0.00001 && VMx > -0.00001 
 				let VMx := 0
