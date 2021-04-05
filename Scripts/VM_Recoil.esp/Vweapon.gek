@@ -69,6 +69,7 @@ float CurAmDiameter
 float CurAmDiameterCorr
 string_var CurAmDiameterCorrINI
 string_var CurAmDiameterCorrINIFULL
+int isDebug
 
 ref CurAmEff 
 ref CurWepProj 
@@ -85,10 +86,12 @@ string_var WeaponSnameHAS
 float WeaponSnameHASX
 float WSR_aggMastery
 float vcIS
-float vFirstShotM
+float vFirstShotMV
+float vFirstShotMH
 float vFirstShotR
 float vFirstShotP
-float vFirstShot
+float vFirstShotV
+float vFirstShotH
 
 begin Function {rVM_Weapon}
 
@@ -114,7 +117,8 @@ begin Function {rVM_Weapon}
 			set IsVats to GetINIFloat "BUGFIXING:vVATSfix" "VM_Recoil.ini"
 			set vUseIndRec to GetINIFloat "Individual:vUseIndividualRecoil" "VM_Recoil.ini"
 			set vUseAmmoPseudo to GetINIFloat "Stats:vUseAmmoPseudoCalc" "VM_Recoil.ini"
-			set vFirstShotM to GetINIFloat "Randomization:vFirstShotMultiplier" "VM_Recoil.ini"
+			set vFirstShotMV to GetINIFloat "Randomization:vFirstShotMultiplierV" "VM_Recoil.ini"
+			set vFirstShotMH to GetINIFloat "Randomization:vFirstShotMultiplierH" "VM_Recoil.ini"
 			set vFirstShotP to GetINIFloat "Randomization:vFirstShotPeriod" "VM_Recoil.ini"
 			set vFirstShotR to GetINIFloat "Randomization:vFirstShotRandomization" "VM_Recoil.ini"
 			
@@ -137,7 +141,8 @@ begin Function {rVM_Weapon}
 			set IsVats to VisuaModellRecoilQuest.IsVats
 			set vUseIndRec to VisuaModellRecoilQuest.vUseIndRec
 			set vUseAmmoPseudo to VisuaModellRecoilQuest.vUseAmmoPseudo
-			set vFirstShotM to VisuaModellRecoilQuest.vFirstShotM
+			set vFirstShotMV to VisuaModellRecoilQuest.vFirstShotMV
+			set vFirstShotMH to VisuaModellRecoilQuest.vFirstShotMH
 			set vFirstShotP to VisuaModellRecoilQuest.vFirstShotP
 			set vFirstShotR to VisuaModellRecoilQuest.vFirstShotR
 			
@@ -211,186 +216,20 @@ begin Function {rVM_Weapon}
 		;PrintToConsole "B42Inertia is: %g" HasInertia
 		;don't mind the var name, tried to replace damage with projectile params
 		
-		if vUseAmmoPseudo == 1		
-			set CurAm to GetPlayerCurrentAmmo
-			let CurAmName := GetEditorID CurAm
-			let CurAmDiameterCorr := 1
-			;let CurAmNameSym := Ar_DeepCopy CurAmName
-			;Print "CurAmName is: " + $CurAmName
+		
+		
+		if vUseAmmoPseudo == 1	
+			set isDebug to GetINIFloat "BUGFIXING:vDebugAmmo" "VM_Recoil.ini"
 			
-			Sv_Replace "Ammo|",CurAmName
-			Sv_Replace "ammo|",CurAmName
-			let CurAmNameDig := sv_length CurAmName
-			;Print "CurAmNameDig is: " + $CurAmNameDig
-			;Print "CurAmName is: " + $CurAmName
-			let CurAmDiameter := 0
-			if (Sv_Find "x", CurAmName) > -1
-				let CurAmNameMetr := Sv_Find "x", CurAmName
-				let CurAmNameMetrB := CurAmName[CurAmNameMetr - 1]
-				let CurAmNameMetrA := CurAmName[CurAmNameMetr + 1]
-				;Print "CurAmNameMetrB is: " + $CurAmNameMetrB
-				let CurAmNameMetrBS := CharToAscii $CurAmNameMetrB
-				let CurAmNameMetrAS := CharToAscii $CurAmNameMetrA
-				;Print "CurAmNameMetrBS is: " + $CurAmNameMetrBS
-				;Print "CurAmNameMetrAS is: " + $CurAmNameMetrAS
-	; the fact that <CharToAscii $CurAmName[CurAmNameMetr - 1]> doesn't work with let is purely disgusting
-				if (IsDigit CurAmNameMetrBS) == 1 && (IsDigit CurAmNameMetrAS) == 1
-					;Print "This ammo is in metrics! " + $CurAmNameMetrB + "x" + $CurAmNameMetrA
-					let CurAmDiameter := #CurAmNameMetrB
-					;Print "This ammo is in metrics! " + $CurAmDiameter + "mm "
-					while CurAmNameMetr > 1
-						let CurAmNameMetr -= 1
-						;Print "CurAmNameMetr " + $CurAmNameMetr
-						let CurAmNameMetrBS := #CurAmName[CurAmNameMetr - 1]
-						;Print "CurAmNameMetrBS " + $CurAmNameMetrBS
-						if CurAmNameMetrBS > -1
-							;Print "there's more 3... "
-							let CurAmDiameter := CurAmDiameter/10 + CurAmNameMetrBS
-							;Print "This ammo is in metrics! " + $CurAmDiameter + "mm "
-						endif
-					loop
-					let CurAmDiameterCorrINI :="AmmoVRecoil\" +  $(CurAmDiameter*100) + ".ini"
-					let CurAmDiameterCorrINIFULL :="Config\" +  $CurAmDiameterCorrINI
-					
-					;Print "CurAmDiameterCorrINIFULL is: " + $CurAmDiameterCorrINIFULL
-					if FileExists CurAmDiameterCorrINIFULL
-						let CurAmDiameterCorr := GetINIFloat "PseudoPower:PP" $CurAmDiameterCorrINI
-						;Print "CurAmDiameterCorr is: " + $CurAmDiameterCorr
-					endif
-				endif
-			elseif (Sv_Find "X", CurAmName) > -1
-				let CurAmNameMetr := Sv_Find "x", CurAmName
-				let CurAmNameMetrB := CurAmName[CurAmNameMetr - 1]
-				let CurAmNameMetrA := CurAmName[CurAmNameMetr + 1]
-				let CurAmNameMetrBS := CharToAscii $CurAmNameMetrB
-				let CurAmNameMetrAS := CharToAscii $CurAmNameMetrA
-				if (IsDigit CurAmNameMetrBS) == 1 && (IsDigit CurAmNameMetrAS) == 1
-					;Print "This Ammo Is In Metrics! " + $CurAmNameMetrB + "x" + $CurAmNameMetrA
-					while CurAmNameMetr > 0
-						let CurAmNameMetr -= 1
-						;Print "CurAmNameMetr " + $CurAmNameMetr
-						let CurAmNameMetrBS := #CurAmName[CurAmNameMetr - 1]
-						;Print "CurAmNameMetrBS " + $CurAmNameMetrBS
-						if CurAmNameMetrBS > -1
-							;Print "there's more 1... "
-							let CurAmDiameter += CurAmNameMetrBS*10^CurAmNameMetr
-						endif
-					loop
-					let CurAmDiameterCorrINI :="AmmoVRecoil\" +  $CurAmDiameter + ".ini"
-					let CurAmDiameterCorrINIFULL :="Config\" +  $CurAmDiameterCorrINI
-					
-					;Print "CurAmDiameterCorrINIFULL is: " + $CurAmDiameterCorrINIFULL
-					if FileExists CurAmDiameterCorrINIFULL
-						let CurAmDiameterCorr := GetINIFloat "PseudoPower:PP" $CurAmDiameterCorrINI
-						;Print "CurAmDiameterCorr is: " + $CurAmDiameterCorr
-					endif
-				endif
-			elseif (Sv_Find "mm", CurAmName) > -1
-				;Print "CurAmName 1 is: " + $CurAmName[0]
-				let CurAmNameMetr := Sv_Find "mm", CurAmName
-				let CurAmNameMetrBS := #CurAmName[CurAmNameMetr - 1]
-				;Print "CurAmNameMetrBS " + $CurAmNameMetrBS
-				;let CurAmNameMetrBS := CharToAscii $CurAmNameMetrB
-				let CurAmDiameter := CurAmNameMetrBS
-				if CurAmNameMetrBS > -1
-					while CurAmNameMetr > 1
-						let CurAmNameMetr -= 1
-						;Print "CurAmNameMetr " + $CurAmNameMetr
-						let CurAmNameMetrBS := #CurAmName[CurAmNameMetr - 1]
-						;Print "CurAmNameMetrBS " + $CurAmNameMetrBS
-						if CurAmNameMetrBS > -1
-							;Print "there's more 2... "
-							let CurAmDiameter += CurAmNameMetrBS*10^CurAmNameMetr
-						endif
-					loop
-					
-					let CurAmDiameterCorrINI :="AmmoVRecoil\" +  $CurAmDiameter + ".ini"
-					let CurAmDiameterCorrINIFULL :="Config\" +  $CurAmDiameterCorrINI
-					
-					;Print "CurAmDiameterCorrINIFULL is: " + $CurAmDiameterCorrINIFULL
-					if FileExists CurAmDiameterCorrINIFULL
-						let CurAmDiameterCorr := GetINIFloat "PseudoPower:PP" $CurAmDiameterCorrINI
-						;Print "CurAmDiameterCorr is: " + $CurAmDiameterCorr
-					endif
-					if CurAmDiameter > 200
-						let CurAmDiameter /= 100
-					endif
-					
-					;Print "This ammo is in metrics! " + $CurAmDiameter + "mm"
-				else
-					;Print "Almost metrics " + $CurAmNameMetrB + $CurAmNameMetrBS
-				endif
-; this part was done for the actual name - and then I realized that localization is a thing...				
-			; elseif (Sv_Find ".", CurAmName) > -1
-				; let CurAmNameMetr := Sv_Find ".", CurAmName
-				; let CurAmNameMetrBS := #CurAmName[CurAmNameMetr + 1]
-				; Print $CurAmNameMetrBS
-				; let CurAmDiameter := CurAmNameMetrBS/10
-				; let CurAmNameDig := 1
-				; if CurAmNameMetrBS > -1
-					; Print "This ammo is in imperial! " + $CurAmDiameter + " mm"
-					; while CurAmName[CurAmNameMetr + 2] != " "
-						; let CurAmNameMetr += 1
-						; Print "CurAmNameMetr " + $CurAmNameMetr
-						; let CurAmNameMetrBS := #CurAmName[CurAmNameMetr + 1]
-						; Print "CurAmNameMetrBS " + $CurAmNameMetrBS
-						; if CurAmNameMetrBS > -1
-							
-							; let CurAmNameMetrBS /= 10^(CurAmNameDig+1)
-							; Print "there's more... " + $CurAmNameMetrBS
-							; let CurAmDiameter := CurAmDiameter + CurAmNameMetrBS
-							; let CurAmNameDig += 1
-						; endif
-					; loop
-					; let CurAmDiameterCorrINI := $CurAmDiameter + ".ini"
-					; Print "CurAmDiameterCorrINI is: " + $CurAmDiameterCorrINI
-					; if FileExists CurAmDiameterCorrINI
-						; Print "CurAmDiameterCorrINI is: " + $CurAmDiameterCorrINI
-					; endif
-					; let CurAmDiameter *= 25.4 
-					; Print "This ammo is in imperial! " + $CurAmDiameter + " mm"
-				; else
-					; Print "Almost metrics " + $CurAmNameMetrB + $CurAmNameMetrBS
-				; endif 
-				
-			elseif Sv_ToNumeric CurAmName > 13
-				let CurAmDiameter := (Sv_ToNumeric CurAmName)
-				let CurAmDiameterCorrINI :="AmmoVRecoil\" +  $CurAmDiameter + ".ini"
-				let CurAmDiameterCorrINIFULL :="Config\" +  $CurAmDiameterCorrINI
-					
-				;Print "CurAmDiameterCorrINIFULL is: " + $CurAmDiameterCorrINIFULL
-				if FileExists CurAmDiameterCorrINIFULL
-					let CurAmDiameterCorr := GetINIFloat "PseudoPower:PP" $CurAmDiameterCorrINI
-					;Print "CurAmDiameterCorr is: " + $CurAmDiameterCorr
-				endif
-				if CurAmDiameter < 100
-					let CurAmDiameter *=25.4/100
-				else 
-					let CurAmDiameter *=25.4/1000
-				endif
-				;Print "This ammo is in imperial! " + $CurAmDiameter + " mm"
-			else
-				;Print "Weird ammo huh " + $CurAmName
-				; let CurAmNameMetr := 0
-				; while CurAmNameDig > -1
-					; let CurAmNameDig -= 1
-					; Print "Try " + $CurAmNameDig + " & " + $CurAmNameMetr + " & " + $CurAmName[CurAmNameDig]
-					; let CurAmNameMetrBS := CharToAscii $CurAmName[CurAmNameDig]
-					; Print "CurAmNameMetrBS " + $CurAmNameMetrBS
-					; if IsDigit CurAmNameMetrBS
-						; let CurAmNameMetrBS := #CurAmName[CurAmNameDig]
-						; let CurAmDiameter += CurAmNameMetrBS*10^CurAmNameMetr
-						; let CurAmNameMetr += 1
-						; Print $CurAmDiameter	
-					; endif	
-				; loop
-				
-			endif	
-		
-		let wDam *= CurAmDiameterCorr*CurAmDiameter/9
-		
-		
-		;Print "wDam " + $wDam
+			if isDebug 
+				Print "Damage before " + $wDam 
+			endif
+			
+			let wDam := Call GetAmmoCalc wDam
+			
+			if isDebug 
+				Print "Damage after " + $wDam
+			endif
 		endif		
 		;PrintToConsole "randn is: %g" randn
 		
@@ -558,10 +397,11 @@ begin Function {rVM_Weapon}
 			
 		endif
 		
-		let vFirstShot := 1
+		let vFirstShotV := 1
+		let vFirstShotH := 1
 		if VisuaModellRecoilQuest.IS_Tick == 0
 			;Print "Ready!"
-			if vFirstShotM > 0 && vFirstShotM != 1
+			if vFirstShotMV > 0 && vFirstShotMV != 1
 				;Print "Set!"
 				if vFirstShotR > 0
 					;Print "Gamble..."
@@ -570,10 +410,27 @@ begin Function {rVM_Weapon}
 					endif 
 					if getrandompercent/100 < vFirstShotR && VisuaModellRecoilQuest.IS_Tick == 0
 							;PrintToConsole "vFirstShotR is: %g" vFirstShotR
-							let vFirstShot := vFirstShotM
+							let vFirstShotV := vFirstShotMV
 					endif
 				else
-						let vFirstShot := vFirstShotM
+						let vFirstShotV := vFirstShotMV
+						;Print "First shot!"
+				endif
+			endif
+			
+			if vFirstShotMH > 0 && vFirstShotMH != 1
+				;Print "Set!"
+				if vFirstShotR > 0
+					;Print "Gamble..."
+					if vFirstShotR > 0.9
+						let vFirstShotR := 0.9
+					endif 
+					if getrandompercent/100 < vFirstShotR && VisuaModellRecoilQuest.IS_Tick == 0
+							;PrintToConsole "vFirstShotR is: %g" vFirstShotR
+							let vFirstShotH := vFirstShotMH
+					endif
+				else
+						let vFirstShotH := vFirstShotMH
 						;Print "First shot!"
 				endif
 			endif
@@ -611,19 +468,26 @@ begin Function {rVM_Weapon}
 		
 
 		if (GetVATSMode <= 0) || IsVats == 0 ;an attempt to fix VATS-related bug, couldn't reproduce it though
-			let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX*vFirstShot;*fixMult
-			let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY*vFirstShot;*fixMult
+			let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX*vFirstShotH;*fixMult
+			let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY*vFirstShotV;*fixMult
 			
-			let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ*vFirstShot;*randn;*fixMult
+			let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ*vFirstShotH;*randn;*fixMult
 			
 			let VisuaModellRecoilQuest.MinCount := fixMult
 			let VisuaModellRecoilQuest.MinCountI := fixMultIS
 			let VisuaModellRecoilQuest.timer := 0
 		endif
 		
-		 ; PrintToConsole "VMy is: %g" VisuaModellRecoilQuest.VMy
-		 ; PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
+		if isDebug 
 		
+			PrintToConsole "DefX is: %g" DefX*vFirstShot
+			PrintToConsole "DefY is: %g" DefY*vFirstShot
+			PrintToConsole "DefZ is: %g" DefZ*vFirstShot
+			PrintToConsole "VMx is: %g" VisuaModellRecoilQuest.VMx
+			PrintToConsole "VMy is: %g" VisuaModellRecoilQuest.VMy
+			PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
+		
+		endif
 		;old attempts - not compatible with inertia	
 		; if GetPCUsingIronSights
 			; let DefTrans := player.GetNifBlockRotation "Spine0Controller"

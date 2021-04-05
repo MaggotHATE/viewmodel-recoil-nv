@@ -55,7 +55,8 @@ float vHupLim
 
 float IsVats
 float vUseIndRec
-float vFirstShotM
+float vFirstShotMV
+float vFirstShotMH
 float vFirstShotR
 float vFirstShotP
 float vUseAmmoPseudo
@@ -83,7 +84,8 @@ begin gamemode
 		set IsVats to GetINIFloat "BUGFIXING:vVATSfix" "VM_Recoil.ini"
 		set vUseIndRec to GetINIFloat "Individual:vUseIndividualRecoil" "VM_Recoil.ini"
 		set vUseAmmoPseudo to GetINIFloat "Stats:vUseAmmoPseudoCalc" "VM_Recoil.ini"
-		set vFirstShotM to GetINIFloat "Randomization:vFirstShotMultiplier" "VM_Recoil.ini"
+		set vFirstShotMV to GetINIFloat "Randomization:vFirstShotMultiplierV" "VM_Recoil.ini"
+		set vFirstShotMH to GetINIFloat "Randomization:vFirstShotMultiplierH" "VM_Recoil.ini"
 		set vFirstShotR to GetINIFloat "Randomization:vFirstShotRandomization" "VM_Recoil.ini"
 		set vFirstShotP to GetINIFloat "Randomization:vFirstShotPeriod" "VM_Recoil.ini"
 		
