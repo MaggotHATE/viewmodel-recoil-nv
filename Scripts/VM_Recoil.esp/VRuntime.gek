@@ -30,6 +30,10 @@ array_var DefTrans
 array_var DefTransNEW
 array_var DefRotIS
 
+
+
+
+
 float timer
 
 float vVerticalIntensity

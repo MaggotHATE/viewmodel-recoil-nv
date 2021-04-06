@@ -1,32 +1,64 @@
 scn VRMCM
 
-float VMx
-float VMy
-float VMz
+string_var SvVerticalIntensity
+string_var SvHorizontalIntensity
+string_var SvVlowLim
+string_var SvVupLim
+string_var SvHlowLim
+string_var SvHupLim
+string_var SvWeaponDamageCoeff
+string_var SvWeaponDamageCoeffH
+string_var SvStrengthCoeffV
+string_var SvStrengthCoeffH
+string_var SvWeightInfluenceV
+string_var SvWeightInfluenceH
+string_var SvUseAmmoPseudo
+string_var SvConstantCoefficient
+string_var SvIronsightsSkillBonus
+string_var SvIronsightsLimitsMultiplier
+string_var SvRotationAsVertical
+string_var SvFirstShotMV
+string_var SvFirstShotMH
+string_var SvFirstShotR
+string_var SvFirstShotP
+string_var SvUseIndRec
+string_var SvUseOldGenericFormula
+string_var SIsVats
+string_var SvDebugAmmo
+string_var SvIsRandomized
 
-float VMxI
-float VMyI
-float VMzI
-
-float DefA0
-float DefA1
-float DefA2
-
-float MinCount
-float MinCountI
-
-float VM_tx
-float VM_ty
-float VM_tz
-
-float VM_A1_0
-float VM_A1_1
-float VM_A1_2
+string_var vVerticalIntensityQ
+string_var vHorizontalIntensityQ
+string_var vVerticalLowerLimitQ
+string_var vVerticalUpperLimitQ
+string_var vHorizontalLowerLimitQ
+string_var vHorizontalUpperLimitQ
+string_var vWeaponDamageCoeffQ
+string_var vWeaponDamageCoeffHQ
+string_var vStrengthCoeffVQ
+string_var vStrengthCoeffHQ
+string_var vWeightInfluenceVQ
+string_var vWeightInfluenceHQ
+string_var vUseAmmoPseudoCalcQ
+string_var vConstantCoefficientQ
+string_var vIronsightsSkillBonusQ
+string_var vIronsightsLimitsMultiplierQ
+string_var vRotationAsVerticalQ
+string_var vFirstShotMultiplierVQ
+string_var vFirstShotMultiplierHQ
+string_var vFirstShotRandomizationQ
+string_var vFirstShotPeriodQ
+string_var vUseIndividualRecoilQ
+string_var vUseOldGenericFormulaQ
+string_var vVATSfixQ
+string_var vDebugAmmoQ
+string_var vIsRandomizedQ
 
 int Fin
 int MCMid
 int OptionID
 float OptionValue
+int IsHover
 
 array_var DefRot
 array_var DefTrans
@@ -49,9 +81,9 @@ float vConstantCoefficient
 int vIronsightsSkillBonus
 float vIronsightsLimitsMultiplier
 
-int vRotationAsVertical
-int vUseOldGenericFormula
-int vDebugAmmo
+float vRotationAsVertical
+float vUseOldGenericFormula
+float vDebugAmmo
 
 float xSpeed
 
@@ -74,6 +106,8 @@ float vUseAmmoPseudo
 
 ref MCMlist
 int vUpdatedINI
+
+
 
 begin gamemode
 
@@ -109,6 +143,67 @@ begin gamemode
 			set vFirstShotMH to GetINIFloat "Randomization:vFirstShotMultiplierH" "VM_Recoil.ini"
 			set vFirstShotR to GetINIFloat "Randomization:vFirstShotRandomization" "VM_Recoil.ini"
 			set vFirstShotP to GetINIFloat "Randomization:vFirstShotPeriod" "VM_Recoil.ini"
+		endif
+		if FileExists "Config\ProfilesVRecoil\Translation.ini"
+		
+			set SvVerticalIntensity to GetINIString "General:vVerticalIntensity" "ProfilesVRecoil\Translation.ini"
+			set SvHorizontalIntensity to GetINIString "General:vHorizontalIntensity" "ProfilesVRecoil\Translation.ini"
+			set SvWeaponDamageCoeff to GetINIString "General:vWeaponDamageCoeff" "ProfilesVRecoil\Translation.ini"
+			set SvWeaponDamageCoeffH to GetINIString "General:vWeaponDamageCoeffH" "ProfilesVRecoil\Translation.ini"
+			set SvStrengthCoeffV to GetINIString "Stats:vStrengthCoeffV" "ProfilesVRecoil\Translation.ini"
+			set SvStrengthCoeffH to GetINIString "Stats:vStrengthCoeffH" "ProfilesVRecoil\Translation.ini"
+			set SvWeightInfluenceV to GetINIString "Stats:vWeightInfluenceV" "ProfilesVRecoil\Translation.ini"
+			set SvWeightInfluenceH to GetINIString "Stats:vWeightInfluenceH" "ProfilesVRecoil\Translation.ini"
+			set SvIsRandomized to GetINIString "Randomization:vIsRandomized" "ProfilesVRecoil\Translation.ini"
+			set SvRotationAsVertical to GetINIString "Randomization:vRotationAsVertical" "ProfilesVRecoil\Translation.ini"
+			
+			set SvConstantCoefficient to GetINIString "Ironsights:vConstantCoefficient" "ProfilesVRecoil\Translation.ini"
+			set SvIronsightsSkillBonus to GetINIString "Ironsights:vIronsightsSkillBonus" "ProfilesVRecoil\Translation.ini"
+			set SvIronsightsLimitsMultiplier to GetINIString "Ironsights:vIronsightsLimitsMultiplier" "ProfilesVRecoil\Translation.ini"
+			
+			set SvVlowLim to GetINIString "General:vVerticalLowerLimit" "ProfilesVRecoil\Translation.ini"
+			set SvVupLim to GetINIString "General:vVerticalUpperLimit" "ProfilesVRecoil\Translation.ini"
+			set SvHlowLim to GetINIString "General:vHorizontalLowerLimit" "ProfilesVRecoil\Translation.ini"
+			set SvHupLim to GetINIString "General:vHorizontalUpperLimit" "ProfilesVRecoil\Translation.ini"
+			set SIsVats to GetINIString "BUGFIXING:vVATSfix" "ProfilesVRecoil\Translation.ini"
+			set SvDebugAmmo to GetINIString "BUGFIXING:vDebugAmmo" "ProfilesVRecoil\Translation.ini"
+			set SvUseIndRec to GetINIString "Individual:vUseIndividualRecoil" "ProfilesVRecoil\Translation.ini"
+			set SvUseOldGenericFormula to GetINIString "Individual:vUseOldGenericFormula" "ProfilesVRecoil\Translation.ini"
+			set SvUseAmmoPseudo to GetINIString "Stats:vUseAmmoPseudoCalc" "ProfilesVRecoil\Translation.ini"
+			set SvFirstShotMV to GetINIString "Randomization:vFirstShotMultiplierV" "ProfilesVRecoil\Translation.ini"
+			set SvFirstShotMH to GetINIString "Randomization:vFirstShotMultiplierH" "ProfilesVRecoil\Translation.ini"
+			set SvFirstShotR to GetINIString "Randomization:vFirstShotRandomization" "ProfilesVRecoil\Translation.ini"
+			set SvFirstShotP to GetINIString "Randomization:vFirstShotPeriod" "ProfilesVRecoil\Translation.ini"
+		
+			set vVerticalIntensityQ to GetINIString "General:vVerticalIntensityQ" "ProfilesVRecoil\Translation.ini"
+			set vHorizontalIntensityQ to GetINIString "General:vHorizontalIntensityQ" "ProfilesVRecoil\Translation.ini"
+			set vWeaponDamageCoeffQ to GetINIString "General:vWeaponDamageCoeffQ" "ProfilesVRecoil\Translation.ini"
+			set vWeaponDamageCoeffHQ to GetINIString "General:vWeaponDamageCoeffHQ" "ProfilesVRecoil\Translation.ini"
+			set vStrengthCoeffVQ to GetINIString "Stats:vStrengthCoeffVQ" "ProfilesVRecoil\Translation.ini"
+			set vStrengthCoeffHQ to GetINIString "Stats:vStrengthCoeffHQ" "ProfilesVRecoil\Translation.ini"
+			set vWeightInfluenceVQ to GetINIString "Stats:vWeightInfluenceVQ" "ProfilesVRecoil\Translation.ini"
+			set vWeightInfluenceHQ to GetINIString "Stats:vWeightInfluenceHQ" "ProfilesVRecoil\Translation.ini"
+			set vIsRandomizedQ to GetINIString "Randomization:vIsRandomizedQ" "ProfilesVRecoil\Translation.ini"
+			set vRotationAsVerticalQ to GetINIString "Randomization:vRotationAsVerticalQ" "ProfilesVRecoil\Translation.ini"
+			
+			set vConstantCoefficientQ to GetINIString "Ironsights:vConstantCoefficientQ" "ProfilesVRecoil\Translation.ini"
+			set vIronsightsSkillBonusQ to GetINIString "Ironsights:vIronsightsSkillBonusQ" "ProfilesVRecoil\Translation.ini"
+			set vIronsightsLimitsMultiplierQ to GetINIString "Ironsights:vIronsightsLimitsMultiplierQ" "ProfilesVRecoil\Translation.ini"
+			
+			set vVerticalLowerLimitQ to GetINIString "General:vVerticalLowerLimitQ" "ProfilesVRecoil\Translation.ini"
+			set vVerticalUpperLimitQ to GetINIString "General:vVerticalUpperLimitQ" "ProfilesVRecoil\Translation.ini"
+			set vHorizontalLowerLimitQ to GetINIString "General:vHorizontalLowerLimitQ" "ProfilesVRecoil\Translation.ini"
+			set vHorizontalUpperLimitQ to GetINIString "General:vHorizontalUpperLimitQ" "ProfilesVRecoil\Translation.ini"
+			set vVATSfixQ to GetINIString "BUGFIXING:vVATSfixQ" "ProfilesVRecoil\Translation.ini"
+			set vDebugAmmoQ to GetINIString "BUGFIXING:vDebugAmmoQ" "ProfilesVRecoil\Translation.ini"
+			set vUseIndividualRecoilQ to GetINIString "Individual:vUseIndividualRecoilQ" "ProfilesVRecoil\Translation.ini"
+			set vUseOldGenericFormulaQ to GetINIString "Individual:vUseOldGenericFormulaQ" "ProfilesVRecoil\Translation.ini"
+			set vUseAmmoPseudoCalcQ to GetINIString "Stats:vUseAmmoPseudoCalcQ" "ProfilesVRecoil\Translation.ini"
+			set vFirstShotMultiplierVQ to GetINIString "Randomization:vFirstShotMultiplierVQ" "ProfilesVRecoil\Translation.ini"
+			set vFirstShotMultiplierHQ to GetINIString "Randomization:vFirstShotMultiplierHQ" "ProfilesVRecoil\Translation.ini"
+			set vFirstShotRandomizationQ to GetINIString "Randomization:vFirstShotRandomizationQ" "ProfilesVRecoil\Translation.ini"
+			set vFirstShotPeriodQ to GetINIString "Randomization:vFirstShotPeriodQ" "ProfilesVRecoil\Translation.ini"
+		
 		endif
 		
 	endif
@@ -173,132 +268,132 @@ Begin MenuMode 1013 ;an attempt to fix VATS-related bug, couldn't reproduce it t
 			SetUIFloat "StartMenu/MCM/*:1/_columns" 2
 
 			SetUIFloat "StartMenu/MCM/*:1/*:1/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:1/_title" "Vertical recoil intensity"
+			SetUIString "StartMenu/MCM/*:1/*:1/_title" $SvVerticalIntensity
 			SetUIFloat "StartMenu/MCM/*:1/*:1/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:1/value/*:1/string" "%.2f" vVerticalIntensity
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:2/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:2/_title" "Horizontal recoil intensity"
+			SetUIString "StartMenu/MCM/*:1/*:2/_title" $SvHorizontalIntensity
 			SetUIFloat "StartMenu/MCM/*:1/*:2/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:2/value/*:1/string" "%.2f" vHorizontalIntensity
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:3/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:3/_title" "Vertical recoil minimum"
+			SetUIString "StartMenu/MCM/*:1/*:3/_title" $SvVlowLim
 			SetUIFloat "StartMenu/MCM/*:1/*:3/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:3/value/*:1/string" "%.2f" vVlowLim
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:4/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:4/_title" "Vertical recoil maximum"
+			SetUIString "StartMenu/MCM/*:1/*:4/_title" $SvVupLim
 			SetUIFloat "StartMenu/MCM/*:1/*:4/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:4/value/*:1/string" "%.2f" vVupLim
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:5/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:5/_title" "Horizontal recoil minimum"
+			SetUIString "StartMenu/MCM/*:1/*:5/_title" $SvHlowLim
 			SetUIFloat "StartMenu/MCM/*:1/*:5/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:5/value/*:1/string" "%.2f" vHlowLim
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:6/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:6/_title" "Horizontal recoil maximum"
+			SetUIString "StartMenu/MCM/*:1/*:6/_title" $SvHupLim
 			SetUIFloat "StartMenu/MCM/*:1/*:6/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:6/value/*:1/string" "%.2f" vHupLim
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:7/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:7/_title" "Base damage coefficient"
+			SetUIString "StartMenu/MCM/*:1/*:7/_title" $SvWeaponDamageCoeff
 			SetUIFloat "StartMenu/MCM/*:1/*:7/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:7/value/*:1/string" "%.2f" vWeaponDamageCoeff
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:8/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:8/_title" "Base damage (for horizontal)"
+			SetUIString "StartMenu/MCM/*:1/*:8/_title" $SvWeaponDamageCoeffH
 			SetUIFloat "StartMenu/MCM/*:1/*:8/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:8/value/*:1/string" "%.2f" vWeaponDamageCoeffH
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:9/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:9/_title" "Strength requirements coefficient"
+			SetUIString "StartMenu/MCM/*:1/*:9/_title" $SvStrengthCoeffV
 			SetUIFloat "StartMenu/MCM/*:1/*:9/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:9/value/*:1/string" "%.2f" vStrengthCoeffV
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:10/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:10/_title" "Strength requirements (for horizontal)"
+			SetUIString "StartMenu/MCM/*:1/*:10/_title" $SvStrengthCoeffH
 			SetUIFloat "StartMenu/MCM/*:1/*:10/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:10/value/*:1/string" "%.2f" vStrengthCoeffH
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:11/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:11/_title" "Weapon weight coefficient"
+			SetUIString "StartMenu/MCM/*:1/*:11/_title" $SvWeightInfluenceV
 			SetUIFloat "StartMenu/MCM/*:1/*:11/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:11/value/*:1/string" "%.2f" vWeightInfluenceV
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:12/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:12/_title" "Weapon weight (for horizontal)"
+			SetUIString "StartMenu/MCM/*:1/*:12/_title" $SvWeightInfluenceH
 			SetUIFloat "StartMenu/MCM/*:1/*:12/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:12/value/*:1/string" "%.2f" vWeightInfluenceH
 
 			SetUIFloat "StartMenu/MCM/*:1/*:13/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:13/_title" "Use ammo parsing"
+			SetUIString "StartMenu/MCM/*:1/*:13/_title" $SvUseAmmoPseudo
 			SetUIFloat "StartMenu/MCM/*:1/*:13/_type" 4
 			SetUIFloat "StartMenu/MCM/*:1/*:13/_value" vUseAmmoPseudo
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:14/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:14/_title" "Ironsighting coefficient"
+			SetUIString "StartMenu/MCM/*:1/*:14/_title" $SvConstantCoefficient
 			SetUIFloat "StartMenu/MCM/*:1/*:14/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:14/value/*:1/string" "%.2f" vConstantCoefficient
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:15/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:15/_title" "Ironsighting skill bonus"
+			SetUIString "StartMenu/MCM/*:1/*:15/_title" $SvIronsightsSkillBonus
 			SetUIFloat "StartMenu/MCM/*:1/*:15/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:15/value/*:1/string" "%.0f" vIronsightsSkillBonus
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:16/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:16/_title" "Ironsighting limits multiplier"
+			SetUIString "StartMenu/MCM/*:1/*:16/_title" $SvIronsightsLimitsMultiplier
 			SetUIFloat "StartMenu/MCM/*:1/*:16/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:16/value/*:1/string" "%.2f" vIronsightsLimitsMultiplier
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:17/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:17/_title" "Randomized horizontal movement"
+			SetUIString "StartMenu/MCM/*:1/*:17/_title" $SvIsRandomized
 			SetUIFloat "StartMenu/MCM/*:1/*:17/_type" 4
 			SetUIFloat "StartMenu/MCM/*:1/*:17/_value" vIsRandomized
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:18/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:18/_title" "Rotation mimics vertical movement"
+			SetUIString "StartMenu/MCM/*:1/*:18/_title" $SvRotationAsVertical
 			SetUIFloat "StartMenu/MCM/*:1/*:18/_type" 4
 			SetUIFloat "StartMenu/MCM/*:1/*:18/_value" vRotationAsVertical
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:19/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:19/_title" "First shot multiplier (vertical)"
+			SetUIString "StartMenu/MCM/*:1/*:19/_title" $SvFirstShotMV
 			SetUIFloat "StartMenu/MCM/*:1/*:19/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:19/value/*:1/string" "%.2f" vFirstShotMV
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:20/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:20/_title" "First shot multiplier (horizontal)"
+			SetUIString "StartMenu/MCM/*:1/*:20/_title" $SvFirstShotMH
 			SetUIFloat "StartMenu/MCM/*:1/*:20/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:20/value/*:1/string" "%.2f" vFirstShotMH
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:22/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:22/_title" "First shot randomization"
+			SetUIString "StartMenu/MCM/*:1/*:22/_title" $SvFirstShotR
 			SetUIFloat "StartMenu/MCM/*:1/*:22/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:22/value/*:1/string" "%.2f" vFirstShotR
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:21/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:21/_title" "First shot relaxing period"
+			SetUIString "StartMenu/MCM/*:1/*:21/_title" $SvFirstShotP
 			SetUIFloat "StartMenu/MCM/*:1/*:21/_type" 2.5
 			SetUIStringEx "StartMenu/MCM/*:1/*:21/value/*:1/string" "%.0f" vFirstShotP
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:23/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:23/_title" "Use individual weapon recoil"
+			SetUIString "StartMenu/MCM/*:1/*:23/_title" $SvUseIndRec
 			SetUIFloat "StartMenu/MCM/*:1/*:23/_type" 4
 			SetUIFloat "StartMenu/MCM/*:1/*:23/_value" vUseIndRec
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:24/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:24/_title" "Use old recoil formula"
+			SetUIString "StartMenu/MCM/*:1/*:24/_title" $SvUseOldGenericFormula
 			SetUIFloat "StartMenu/MCM/*:1/*:24/_type" 4
 			SetUIFloat "StartMenu/MCM/*:1/*:24/_value" vUseOldGenericFormula
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:25/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:25/_title" "Use VATS fix"
+			SetUIString "StartMenu/MCM/*:1/*:25/_title" $SIsVats
 			SetUIFloat "StartMenu/MCM/*:1/*:25/_type" 4
 			SetUIFloat "StartMenu/MCM/*:1/*:25/_value" IsVats
 			
 			SetUIFloat "StartMenu/MCM/*:1/*:26/_enable" 1
-			SetUIString "StartMenu/MCM/*:1/*:26/_title" "Show debug info"
+			SetUIString "StartMenu/MCM/*:1/*:26/_title" $SvDebugAmmo
 			SetUIFloat "StartMenu/MCM/*:1/*:26/_type" 4
 			SetUIFloat "StartMenu/MCM/*:1/*:26/_value" vDebugAmmo
 			
@@ -382,7 +477,15 @@ Begin MenuMode 1013 ;an attempt to fix VATS-related bug, couldn't reproduce it t
 			elseif OptionID == 21
 				set vFirstShotP to OptionValue
 			elseif OptionID == 22
-				set vFirstShotR to OptionValue				
+				set vFirstShotR to OptionValue
+			elseif OptionID == 23
+				set vUseIndRec to OptionValue
+			elseif OptionID == 24
+				set SvUseOldGenericFormula to OptionValue
+			elseif OptionID == 25
+				set IsVats to OptionValue
+			elseif OptionID == 26
+				set vDebugAmmo to OptionValue		
 			endif
 			
 		elseif GetUIFloat "StartMenu/MCM/_ShowList" == 1		;4 - SHOW LIST
@@ -397,139 +500,204 @@ Begin MenuMode 1013 ;an attempt to fix VATS-related bug, couldn't reproduce it t
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvVerticalIntensity
 			elseif OptionID == 2
 				SetUIFloat "StartMenu/MCM/_Value" vHorizontalIntensity
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvHorizontalIntensity
 			elseif OptionID == 3
 				SetUIFloat "StartMenu/MCM/_Value" vVlowLim
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvVlowLim
 			elseif OptionID == 4
 				SetUIFloat "StartMenu/MCM/_Value" vVupLim
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvVupLim
 			elseif OptionID == 5
 				SetUIFloat "StartMenu/MCM/_Value" vHlowLim
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvHlowLim
 			elseif OptionID == 6
 				SetUIFloat "StartMenu/MCM/_Value" vHupLim
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvHupLim
 			elseif OptionID == 7
 				SetUIFloat "StartMenu/MCM/_Value" vWeaponDamageCoeff
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvWeaponDamageCoeff
 			elseif OptionID == 8
 				SetUIFloat "StartMenu/MCM/_Value" vWeaponDamageCoeffH
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvWeaponDamageCoeffH
 			elseif OptionID == 9
 				SetUIFloat "StartMenu/MCM/_Value" vStrengthCoeffV
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvStrengthCoeffV
 			elseif OptionID == 10
 				SetUIFloat "StartMenu/MCM/_Value" vStrengthCoeffH
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvStrengthCoeffH
 			elseif OptionID == 11
 				SetUIFloat "StartMenu/MCM/_Value" vWeightInfluenceV
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvWeightInfluenceV
 			elseif OptionID == 12
 				SetUIFloat "StartMenu/MCM/_Value" vWeightInfluenceH
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvWeightInfluenceH
 			elseif OptionID == 14
 				SetUIFloat "StartMenu/MCM/_Value" vConstantCoefficient
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvConstantCoefficient
 			elseif OptionID == 15
 				SetUIFloat "StartMenu/MCM/_Value" vIronsightsSkillBonus
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 0
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 1
 				SetUIFloat "StartMenu/MCM/_ValueMax" 100
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvIronsightsSkillBonus
 			elseif OptionID == 16
 				SetUIFloat "StartMenu/MCM/_Value" vIronsightsLimitsMultiplier
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvIronsightsLimitsMultiplier
 			elseif OptionID == 19
 				SetUIFloat "StartMenu/MCM/_Value" vFirstShotMV
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvFirstShotMV
 			elseif OptionID == 20
 				SetUIFloat "StartMenu/MCM/_Value" vFirstShotMH
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvFirstShotMH
 			elseif OptionID == 21
 				SetUIFloat "StartMenu/MCM/_Value" vFirstShotP
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 0
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 1
 				SetUIFloat "StartMenu/MCM/_ValueMax" 200
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvFirstShotP
 			elseif OptionID == 22
 				SetUIFloat "StartMenu/MCM/_Value" vFirstShotR
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
 				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
-				SetUIString "StartMenu/MCM/*:2/_title" " "
+				SetUIString "StartMenu/MCM/*:2/_title" $SvFirstShotR
 			
 			endif
 		elseif GetUIFloat "StartMenu/MCM/_DefaultScale"		;6 - DEFAULT SCALE
 			SetUIFloat "StartMenu/MCM/_DefaultScale" 0
 			SetUIFloat "StartMenu/MCM/_ShowScale" 2
 			
+		endif
+		
+		if IsHover != GetUIFloat "StartMenu/MCM/*:1/_optionID"		;7 - MOUSE-OVER
+			set IsHover to GetUIFloat "StartMenu/MCM/*:1/_optionID"
+			if IsHover
+				SetUIFloat "StartMenu/MCM/MCM_Info/visible" 1
+
+				if IsHover == 1
+					SetUIString "StartMenu/MCM/*:9/string" $vVerticalIntensityQ
+				elseif IsHover == 2
+					SetUIString "StartMenu/MCM/*:9/string" $vHorizontalIntensityQ
+				elseif IsHover == 3
+					SetUIString "StartMenu/MCM/*:9/string" $vVerticalLowerLimitQ
+				elseif IsHover == 4
+					SetUIString "StartMenu/MCM/*:9/string" $vVerticalUpperLimitQ
+				elseif IsHover == 5
+					SetUIString "StartMenu/MCM/*:9/string" $vHorizontalLowerLimitQ
+				elseif IsHover == 6
+					SetUIString "StartMenu/MCM/*:9/string" $vHorizontalUpperLimitQ
+				elseif IsHover == 7
+					SetUIString "StartMenu/MCM/*:9/string" $vWeaponDamageCoeffQ
+				elseif IsHover == 8
+					SetUIString "StartMenu/MCM/*:9/string" $vWeaponDamageCoeffHQ
+				elseif IsHover == 9
+					SetUIString "StartMenu/MCM/*:9/string" $vStrengthCoeffVQ
+				elseif IsHover == 10
+					SetUIString "StartMenu/MCM/*:9/string" $vStrengthCoeffHQ
+				elseif IsHover == 11
+					SetUIString "StartMenu/MCM/*:9/string" $vWeightInfluenceVQ
+				elseif IsHover == 12
+					SetUIString "StartMenu/MCM/*:9/string" $vWeightInfluenceHQ
+				elseif IsHover == 13
+					SetUIString "StartMenu/MCM/*:9/string" $vUseAmmoPseudoCalcQ
+				elseif IsHover == 14
+					SetUIString "StartMenu/MCM/*:9/string" $vConstantCoefficientQ
+				elseif IsHover == 15
+					SetUIString "StartMenu/MCM/*:9/string" $vIronsightsSkillBonusQ
+				elseif IsHover == 16
+					SetUIString "StartMenu/MCM/*:9/string" $vIronsightsLimitsMultiplierQ
+				elseif IsHover == 17
+					SetUIString "StartMenu/MCM/*:9/string" $vIsRandomizedQ
+				elseif IsHover == 18
+					SetUIString "StartMenu/MCM/*:9/string" $vRotationAsVerticalQ
+				elseif IsHover == 19
+					SetUIString "StartMenu/MCM/*:9/string" $vFirstShotMultiplierVQ
+				elseif IsHover == 20
+					SetUIString "StartMenu/MCM/*:9/string" $vFirstShotMultiplierHQ
+				elseif IsHover == 21
+					SetUIString "StartMenu/MCM/*:9/string" $vFirstShotPeriodQ
+				elseif IsHover == 22
+					SetUIString "StartMenu/MCM/*:9/string" $vFirstShotRandomizationQ
+				elseif IsHover == 23
+					SetUIString "StartMenu/MCM/*:9/string" $vUseIndividualRecoilQ
+				elseif IsHover == 24
+					SetUIString "StartMenu/MCM/*:9/string" $vUseOldGenericFormulaQ
+				elseif IsHover == 25
+					SetUIString "StartMenu/MCM/*:9/string" $vVATSfixQ
+				elseif IsHover == 26
+					SetUIString "StartMenu/MCM/*:9/string" $vDebugAmmoQ
+				else
+					SetUIFloat "StartMenu/MCM/MCM_Info/visible" 0
+				endif
+			else
+				SetUIFloat "StartMenu/MCM/MCM_Info/visible" 0
+			endif
 		endif
 		
 	endif
