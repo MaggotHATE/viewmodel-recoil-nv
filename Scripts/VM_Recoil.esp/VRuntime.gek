@@ -65,6 +65,8 @@ float vFirstShotR
 float vFirstShotP
 float vUseAmmoPseudo
 
+float vRotationAsVertical
+
 begin gamemode
 
 	if getgameloaded
@@ -80,6 +82,7 @@ begin gamemode
 		set vWeightInfluenceV to GetINIFloat "Stats:vWeightInfluenceV" "VM_Recoil.ini"
 		set vWeightInfluenceH to GetINIFloat "Stats:vWeightInfluenceH" "VM_Recoil.ini"
 		set vIsRandomized to GetINIFloat "Randomization:vIsRandomized" "VM_Recoil.ini"
+		set vRotationAsVertical to GetINIFloat "Randomization:vRotationAsVertical" "VM_Recoil.ini"
 		
 		set vVlowLim to GetINIFloat "General:vVerticalLowerLimit" "VM_Recoil.ini"
 		set vVupLim to GetINIFloat "General:vVerticalUpperLimit" "VM_Recoil.ini"

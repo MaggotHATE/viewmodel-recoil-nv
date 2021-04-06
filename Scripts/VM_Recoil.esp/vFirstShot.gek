@@ -1,0 +1,63 @@
+scn vFirstShot
+
+array_var ResultVH
+
+int isDebug
+
+float vFirstShotMV
+float vFirstShotMH
+float vFirstShotR
+float vFirstShotP
+float vFirstShotV
+float vFirstShotH
+
+begin function {vFirstShotMV, vFirstShotMH, vFirstShotR, vFirstShotP}
+
+		set isDebug to GetINIFloat "BUGFIXING:vDebugAmmo" "VM_Recoil.ini"
+
+		if isDebug
+			PrintToConsole "Begin vFirstShot"
+		endif
+
+		;Print "Ready!"
+		if vFirstShotMV > 0 && vFirstShotMV != 1
+			;Print "Set!"
+			if vFirstShotR > 0
+				;Print "Gamble..."
+				if vFirstShotR > 0.9
+					let vFirstShotR := 0.9
+				endif 
+				if getrandompercent/100 < vFirstShotR && VisuaModellRecoilQuest.IS_Tick == 0
+						;PrintToConsole "vFirstShotR is: %g" vFirstShotR
+						let vFirstShotV := vFirstShotMV
+				endif
+			else
+					let vFirstShotV := vFirstShotMV
+					;Print "First shot!"
+			endif
+		endif
+		
+		if vFirstShotMH > 0 && vFirstShotMH != 1
+			;Print "Set!"
+			if vFirstShotR > 0
+				;Print "Gamble..."
+				if vFirstShotR > 0.9
+					let vFirstShotR := 0.9
+				endif 
+				if getrandompercent/100 < vFirstShotR && VisuaModellRecoilQuest.IS_Tick == 0
+						;PrintToConsole "vFirstShotR is: %g" vFirstShotR
+						let vFirstShotH := vFirstShotMH
+				endif
+			else
+					let vFirstShotH := vFirstShotMH
+					;Print "First shot!"
+			endif
+		endif
+
+		let ResultVH:= Ar_Construct "array"
+		let ResultVH[0]  := vFirstShotH
+		let ResultVH[1]  := vFirstShotV
+
+		SetFunctionValue ResultVH
+
+end

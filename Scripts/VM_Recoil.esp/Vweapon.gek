@@ -2,6 +2,7 @@ scn Vweapon
 
 ref rVM_Weapon
 
+
 float pSkill
 float pStr
 float wDam
@@ -93,6 +94,8 @@ float vFirstShotP
 float vFirstShotV
 float vFirstShotH
 
+float vRotationAsVertical
+
 begin Function {rVM_Weapon}
 
 	if IsPC1stPerson == 1
@@ -121,6 +124,7 @@ begin Function {rVM_Weapon}
 			set vFirstShotMH to GetINIFloat "Randomization:vFirstShotMultiplierH" "VM_Recoil.ini"
 			set vFirstShotP to GetINIFloat "Randomization:vFirstShotPeriod" "VM_Recoil.ini"
 			set vFirstShotR to GetINIFloat "Randomization:vFirstShotRandomization" "VM_Recoil.ini"
+			set vRotationAsVertical to GetINIFloat "Randomization:vRotationAsVertical" "VM_Recoil.ini"
 			
 		else
 		
@@ -133,6 +137,7 @@ begin Function {rVM_Weapon}
 			set vWInfV to VisuaModellRecoilQuest.vWeightInfluenceV
 			set vWInfH to VisuaModellRecoilQuest.vWeightInfluenceH
 			set vIsRand to VisuaModellRecoilQuest.vIsRandomized
+			set vRotationAsVertical to VisuaModellRecoilQuest.vRotationAsVertical
 			
 			set vVlowLim to VisuaModellRecoilQuest.vVlowLim
 			set vVupLim to VisuaModellRecoilQuest.vVupLim
@@ -174,13 +179,10 @@ begin Function {rVM_Weapon}
 		;PrintToConsole "wStr is: %g" wStr
 		
 		if vUseIndRec
-			set WeaponSname to GetEditorID rVM_Weapon
-			let WeaponSname :="WeaponVRecoil\" + WeaponSname + ".ini"
-			let WeaponSnameHAS :="Config\" + WeaponSname
-			let WeaponSnameHASX := FileExists $WeaponSnameHAS
+
 			
 			;Print "rVM_Weapon is: " + $WeaponSname
-			;Print "WeaponSnameHAS is: " + $WeaponSnameHAS
+			
 			;Print "WeaponSnameHAS is: Config\WeaponVRecoil\WeapAKMS.ini"
 			;Print "FileExists is: " + $WeaponSnameHASX
 			;Print "vUseIndRec is: " + $vUseIndRec
@@ -225,7 +227,7 @@ begin Function {rVM_Weapon}
 				Print "Damage before " + $wDam 
 			endif
 			
-			let wDam := Call GetAmmoCalc wDam
+			let wDam := Call vGetAmmoCalc wDam
 			
 			if isDebug 
 				Print "Damage after " + $wDam
@@ -289,65 +291,25 @@ begin Function {rVM_Weapon}
 			let WSR_aggMastery := 1/vSkillBased + vStrBased; - ( abs DefY + abs DefX + abs DefZ)
 			;PrintToConsole "WSR_aggMastery is: %g" WSR_aggMastery
 			
+			set WeaponSname to GetEditorID rVM_Weapon
+			let WeaponSname :="WeaponVRecoil\" + WeaponSname + ".ini"
+			let WeaponSnameHAS :="Config\" + WeaponSname
+			let WeaponSnameHASX := FileExists $WeaponSnameHAS
+			
+			if isDebug
+				Print "Individual ini is: " + $WeaponSnameHAS + " " + $WeaponSnameHASX
+			endif
+			
 			if vUseIndRec && WeaponSnameHASX
 				
-				let DefY := GetINIFloat "PATTERN:Y" $WeaponSname
-				let DefX := GetINIFloat "PATTERN:X" $WeaponSname
-				let DefZ := GetINIFloat "PATTERN:Z" $WeaponSname
 				
-				
-								
-				
-				if GetPCUsingIronSights
-					let vcIS := GetINIFloat "PATTERN:cIS" $WeaponSname
-					let DefY *= WSR_aggMastery*vcIS
-					let DefX *= WSR_aggMastery*vcIS
-					let DefZ *= WSR_aggMastery*vcIS
-				else 
-					let DefY *= WSR_aggMastery
-					let DefX *= WSR_aggMastery
-					let DefZ *= WSR_aggMastery
-				endif
-				
-				;PrintToConsole "DefX is: %g" DefX
-				;PrintToConsole "DefY is: %g" DefY
-				;PrintToConsole "DefZ is: %g" DefZ
-				
-				let randn := GetINIFloat "PATTERN:dX" $WeaponSname
-				if randn < 0 ; randomization left and right
-					if getrandompercent > 50
-						let randn *= -1
-					endif
-				else ; rand, but still to one side
-					if getrandompercent > 50
-						let randn := 1
-					endif
-				endif
-				
-				let randWY := GetINIFloat "PATTERN:dY" $WeaponSname
-				if randWY < 0 ; pseudo constant recoil
-					if getrandompercent/100 < -1*randWY
-						let DefY := 0
-					endif
-				else  ; rand for one side, but a little
-					if getrandompercent < 50
-						let DefY := DefY + randWY
-					endif
-				endif
-				
-				let randWZ := GetINIFloat "PATTERN:dZ" $WeaponSname
-				
-				if randWZ < 0 ; rand
-					if getrandompercent > 50
-						let randWZ *= -1
-						let DefZ *= randWZ
-					endif
-				else ; like Y
-					if getrandompercent < 50
-						let DefZ := DefZ + randWZ
-					endif
-				endif
-				
+				let DefTrans := Ar_Construct "array"
+				let DefTrans := Call vIndividualRecoil WeaponSname WSR_aggMastery DefX DefY DefZ
+				let DefX := DefTrans[0]
+				let DefY := DefTrans[1]
+				let DefZ := DefTrans[2]
+
+
 				;PrintToConsole "DefY +randWY is: %g" DefY
 				;PrintToConsole "randWZ is: %g" randWZ
 				
@@ -358,6 +320,7 @@ begin Function {rVM_Weapon}
 				else
 					let DefY := (vVInt*vConst + vWDamCoeff*wDam - vWeight*vWInfV)*WSR_aggMastery*vSCoeffV
 					let DefX := (vHInt*vConst + vWDamCoeff*wDam*vWDamCoeffH + vWeight*vWInfH)*WSR_aggMastery*vSCoeffH
+					
 					;Print "DefY = " + $(vVInt*vConst) + " + " + $vSCoeffV + " + " + $(vWDamCoeff*wDam) + " - " + $(vWeight*vWInfV)
 				endif
 			
@@ -373,7 +336,7 @@ begin Function {rVM_Weapon}
 					let DefX := vHlowLim
 				endif			
 				
-				if (GetINIFloat "Randomization:vRotationAsVertical" "VM_Recoil.ini") == 0 
+				if vRotationAsVertical == 0 
 					let DefZ := DefX
 				else
 					let DefZ := DefY
@@ -397,51 +360,35 @@ begin Function {rVM_Weapon}
 			
 		endif
 		
+		; PrintToConsole "DefX 0 is: %g" DefX
+		; PrintToConsole "DefY 0 is: %g" DefY
+		; PrintToConsole "DefZ 0 is: %g" DefZ
+		
 		let vFirstShotV := 1
 		let vFirstShotH := 1
+		
 		if VisuaModellRecoilQuest.IS_Tick == 0
-			;Print "Ready!"
-			if vFirstShotMV > 0 && vFirstShotMV != 1
-				;Print "Set!"
-				if vFirstShotR > 0
-					;Print "Gamble..."
-					if vFirstShotR > 0.9
-						let vFirstShotR := 0.9
-					endif 
-					if getrandompercent/100 < vFirstShotR && VisuaModellRecoilQuest.IS_Tick == 0
-							;PrintToConsole "vFirstShotR is: %g" vFirstShotR
-							let vFirstShotV := vFirstShotMV
-					endif
-				else
-						let vFirstShotV := vFirstShotMV
-						;Print "First shot!"
-				endif
-			endif
-			
-			if vFirstShotMH > 0 && vFirstShotMH != 1
-				;Print "Set!"
-				if vFirstShotR > 0
-					;Print "Gamble..."
-					if vFirstShotR > 0.9
-						let vFirstShotR := 0.9
-					endif 
-					if getrandompercent/100 < vFirstShotR && VisuaModellRecoilQuest.IS_Tick == 0
-							;PrintToConsole "vFirstShotR is: %g" vFirstShotR
-							let vFirstShotH := vFirstShotMH
-					endif
-				else
-						let vFirstShotH := vFirstShotMH
-						;Print "First shot!"
-				endif
-			endif
-			
+		
+			let DefTrans := Call vFirstShot vFirstShotMV, vFirstShotMH, vFirstShotR, vFirstShotP
+			let vFirstShotH := DefTrans[0]
+			let vFirstShotV := DefTrans[1]
 		else
-			;Print "You're too fast, honey!"
+			if isDebug
+				Print "You're too fast, honey!"
+			endif
 		endif
+		
+		let DefX *= vFirstShotH
+		let DefY *= vFirstShotV
+		
+		if vRotationAsVertical == 0 
+			let DefZ *= vFirstShotH
+		else 
+			let DefZ *= vFirstShotV
+		endif
+		
 		let VisuaModellRecoilQuest.IS_Tick := vFirstShotP
-		; PrintToConsole "DefX is: %g" DefX
-		; PrintToConsole "DefY is: %g" DefY
-		; PrintToConsole "DefZ is: %g" DefZ
+		
 		
 		
 		;this is where we try to take B42 Inertia into account
@@ -468,10 +415,10 @@ begin Function {rVM_Weapon}
 		
 
 		if (GetVATSMode <= 0) || IsVats == 0 ;an attempt to fix VATS-related bug, couldn't reproduce it though
-			let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX*vFirstShotH;*fixMult
-			let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY*vFirstShotV;*fixMult
+			let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX;*fixMult
+			let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY;*fixMult
 			
-			let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ*vFirstShotH;*randn;*fixMult
+			let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ;*randn;*fixMult
 			
 			let VisuaModellRecoilQuest.MinCount := fixMult
 			let VisuaModellRecoilQuest.MinCountI := fixMultIS
@@ -488,21 +435,6 @@ begin Function {rVM_Weapon}
 			PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
 		
 		endif
-		;old attempts - not compatible with inertia	
-		; if GetPCUsingIronSights
-			; let DefTrans := player.GetNifBlockRotation "Spine0Controller"
-			; let VMx := DefTrans[0] - DefX*randn
-			; let VMy := DefTrans[2] + DefY
-			; let VMz := DefTrans[1] + DefX*randn;DefZ*randn*0.2
-			; player.SetNifBlockRotation "Spine0Controller" VMx VMz VMy
-		; else
-			; let DefTrans := player.GetNifBlockRotation "NeckController"
-			; let VMx := DefTrans[0] - DefX*randn
-			; let VMy := DefTrans[2] + DefY
-			; let VMz := DefTrans[1] + DefX*randn; DefZ*randn*0.2
-			; player.SetNifBlockRotation "NeckController" VMx VMz VMy
-		; endif
-		
-		;PrintToConsole "NeckController is: %g" DefTrans 2
+
 	endif	
 end
