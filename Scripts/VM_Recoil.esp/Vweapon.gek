@@ -257,7 +257,7 @@ begin Function {rVM_Weapon}
 				;PrintToConsole "projDam is: %g" projDam
 				;PrintToConsole "projSpeed is: %g" projSpeed
 				
-				let wDam *= projSpeed*projDam
+				let wDam *= projDam*projSpeed
 			endif
 			
 
@@ -359,6 +359,7 @@ begin Function {rVM_Weapon}
 					endif
 				endif
 				
+
 				if isDebug
 					PrintToConsole "DefX IR is: %g" DefX
 					PrintToConsole "DefY IR is: %g" DefY
@@ -384,7 +385,7 @@ begin Function {rVM_Weapon}
 					
 					;Print "DefY = " + $(vVInt*vConst) + " + " + $vSCoeffV + " + " + $(vWDamCoeff*wDam) + " - " + $(vWeight*vWInfV)
 				endif
-				
+
 				if vRotationAsVertical == 0 
 					let DefZ := DefX
 				else
@@ -407,18 +408,6 @@ begin Function {rVM_Weapon}
 			
 			let DefX *= randn
 			
-		endif
-		
-		if DefY > vVupLim 
-			let DefY := vVupLim
-		elseif DefY < vVlowLim
-			let DefY := vVlowLim
-		endif
-		
-		if DefX > vHupLim 
-			let DefX := vHupLim
-		elseif DefX < vHlowLim
-			let DefX := vHlowLim
 		endif
 		
 		; PrintToConsole "DefX 0 is: %g" DefX
@@ -472,6 +461,32 @@ begin Function {rVM_Weapon}
 			let fixMultIS := 0.814
 			;PrintToConsole "fixMultIS is: %g" fixMultIS
 			;let DefZ := DefZ*-1
+		endif
+		
+		if DefY > vVupLim 
+			let DefY := vVupLim
+		elseif DefY < vVlowLim
+			let DefY := vVlowLim
+		endif
+		
+		if DefX > vHupLim 
+			let DefX := vHupLim
+		elseif DefX < vHlowLim
+			let DefX := vHlowLim
+		endif
+		
+		if vRotationAsVertical == 0 
+			if DefZ > vHupLim 
+				let DefZ := vHupLim
+			elseif DefZ < vHlowLim
+				let DefZ := vHlowLim
+			endif
+		else
+			if DefZ > vVupLim 
+				let DefZ := vVupLim
+			elseif DefZ < vVlowLim
+				let DefZ := vVlowLim
+			endif
 		endif
 		
 
