@@ -537,13 +537,13 @@ Begin MenuMode 1013 ;an attempt to fix VATS-related bug, couldn't reproduce it t
 			elseif OptionID == 22
 				set vFirstShotMH to OptionValue
 			elseif OptionID == 23
-				set vFirstShotP to OptionValue
-			elseif OptionID == 24
 				set vFirstShotR to OptionValue
+			elseif OptionID == 24
+				set vFirstShotP to OptionValue
 			elseif OptionID == 25
 				set vUseIndRec to OptionValue
 			elseif OptionID == 26
-				set SvUseOldGenericFormula to OptionValue
+				set vUseOldGenericFormula to OptionValue
 			elseif OptionID == 27
 				set IsVats to OptionValue
 			elseif OptionID == 28
@@ -677,15 +677,15 @@ Begin MenuMode 1013 ;an attempt to fix VATS-related bug, couldn't reproduce it t
 				SetUIString "StartMenu/MCM/*:2/_title" $SvFirstShotMH
 			elseif OptionID == 23
 				SetUIFloat "StartMenu/MCM/_Value" vFirstShotR
-				SetUIFloat "StartMenu/MCM/_ValueDecimal" 0
-				SetUIFloat "StartMenu/MCM/_ValueIncrement" 1
-				SetUIFloat "StartMenu/MCM/_ValueMax" 200
+				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
+				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
+				SetUIFloat "StartMenu/MCM/_ValueMax" 20
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
 				SetUIString "StartMenu/MCM/*:2/_title" $SvFirstShotR
 			elseif OptionID == 24
 				SetUIFloat "StartMenu/MCM/_Value" vFirstShotP
-				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
-				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
+				SetUIFloat "StartMenu/MCM/_ValueDecimal" 0
+				SetUIFloat "StartMenu/MCM/_ValueIncrement" 1
 				SetUIFloat "StartMenu/MCM/_ValueMax" 200
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
 				SetUIString "StartMenu/MCM/*:2/_title" $SvFirstShotP

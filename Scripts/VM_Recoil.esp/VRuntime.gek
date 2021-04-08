@@ -104,6 +104,8 @@ begin gamemode
 		let IS_Tick := 0
 		let xSpeed := 0
 		
+		let MinCount := 0.814
+		let MinCountI := 0.814
 	endif
 	
 	; if player.getdead || player.getisragdolled
@@ -132,20 +134,14 @@ begin gamemode
 		
 		
 		
-		let DefTrans := player.GetNifBlockRotation "NeckController"
+		let DefTrans := player.GetNifBlockRotation "InertiaController"
 		let VMxI := DefTrans[0]*MinCountI + DefA0*MinCountI
 		let VMyI := DefTrans[2]*MinCountI + DefA1*MinCountI
 		let VMzI := DefTrans[1]*MinCountI - DefA2*MinCountI
 
-
-		let DefRotIS := player.GetNifBlockRotation "Spine0Controller" ;so what if we want viewmodel walking movement? monkaHmm 
-		; just an idea for now, first test were rather weird 
-		
-		
-		;let DefTrans := player.GetNifBlockRotation "NeckController"
-		let VMx := (DefTrans[0]*MinCount + DefA0*MinCount);*HipNode
-		let VMy := (DefTrans[2]*MinCount + DefA1*MinCount);*HipNode
-		let VMz := (DefTrans[1]*MinCount - DefA2*MinCount);*HipNode
+		let VMx := DefTrans[0]*MinCount + DefA0*MinCount;*HipNode
+		let VMy := DefTrans[2]*MinCount + DefA1*MinCount;*HipNode
+		let VMz := DefTrans[1]*MinCount - DefA2*MinCount;*HipNode
 
 		;this multiplier should slowly zero all rotation - but only if we stop firing
 		;useless? probably, but movement feels less snappy monkaHmm

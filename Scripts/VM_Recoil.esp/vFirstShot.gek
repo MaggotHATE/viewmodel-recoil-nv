@@ -19,6 +19,10 @@ begin function {vFirstShotMV, vFirstShotMH, vFirstShotR, vFirstShotP}
 			PrintToConsole "Begin vFirstShot"
 		endif
 
+		
+		let vFirstShotV := 1
+		let vFirstShotH := 1
+		
 		;Print "Ready!"
 		if vFirstShotMV > 0 && vFirstShotMV != 1
 			;Print "Set!"
@@ -54,7 +58,7 @@ begin function {vFirstShotMV, vFirstShotMH, vFirstShotR, vFirstShotP}
 			endif
 		endif
 
-		let ResultVH:= Ar_Construct "array"
+		let ResultVH := Ar_Construct "array"
 		let ResultVH[0]  := vFirstShotH
 		let ResultVH[1]  := vFirstShotV
 

@@ -20,12 +20,14 @@ float WSR_aggMastery
 
 begin Function {WeaponSname, WSR_aggMastery, DefX, DefY, DefZ }
 				
+
 				set isDebug to GetINIFloat "BUGFIXING:vDebugAmmo" "VM_Recoil.ini"
 	
 				if isDebug
 					PrintToConsole "Begin vIndividualRecoil"
 				endif
 				
+
 				let DefY := GetINIFloat "PATTERN:Y" $WeaponSname
 				let DefX := GetINIFloat "PATTERN:X" $WeaponSname
 				let DefZ := GetINIFloat "PATTERN:Z" $WeaponSname
@@ -44,11 +46,7 @@ begin Function {WeaponSname, WSR_aggMastery, DefX, DefY, DefZ }
 					let DefZ *= WSR_aggMastery
 				endif
 				
-				if isDebug
-					PrintToConsole "DefX is: %g" DefX
-					PrintToConsole "DefY is: %g" DefY
-					PrintToConsole "DefZ is: %g" DefZ
-				endif
+				
 				
 				let randn := GetINIFloat "PATTERN:dX" $WeaponSname
 				if randn < 0 ; randomization left and right
@@ -86,14 +84,21 @@ begin Function {WeaponSname, WSR_aggMastery, DefX, DefY, DefZ }
 				endif
 				
 				if isDebug
-					;PrintToConsole "DefY +randWY is: %g" DefY
-					;PrintToConsole "randWZ is: %g" randWZ
+					PrintToConsole "DefX IR is: %g" DefX
+					PrintToConsole "DefY IR is: %g" DefY
+					PrintToConsole "DefZ IR is: %g" DefZ
+				endif
+				
+				if isDebug
+					PrintToConsole "DefY +randWY is: %g" DefY
+					PrintToConsole "randWZ is: %g" randWZ
 				endif
 				
 				let ResultXYZ := Ar_Construct "array"
 				let ResultXYZ[0]  := DefX
 				let ResultXYZ[1]  := DefY
 				let ResultXYZ[2]  := DefZ
+				let ResultXYZ[3]  := randn
 
 				
 				SetFunctionValue ResultXYZ
