@@ -1,0 +1,47 @@
+scn	vPresetButtonSave
+
+string_var vSetName
+string_var PresetPath
+
+
+begin Function {vSetName}
+
+	
+	
+	if eval vSetName != " "
+		Print "Saving " + $vSetName + "... "
+		let PresetPath := "ProfilesVRecoil\Custom\"+$vSetName
+		Print "vSetName Name=" + $PresetPath
+
+		SetINIFloat "General:vVerticalIntensity" VisuaModellRecoilQuestMCM.vVerticalIntensity $PresetPath
+		SetINIFloat "General:vHorizontalIntensity" VisuaModellRecoilQuestMCM.vHorizontalIntensity $PresetPath
+		SetINIFloat "General:vWeaponDamageCoeff" VisuaModellRecoilQuestMCM.vWeaponDamageCoeff $PresetPath
+		SetINIFloat "General:vWeaponDamageCoeffH" VisuaModellRecoilQuestMCM.vWeaponDamageCoeffH $PresetPath
+		SetINIFloat "Stats:vStrengthCoeffV" VisuaModellRecoilQuestMCM.vStrengthCoeffV $PresetPath
+		SetINIFloat "Stats:vStrengthCoeffH" VisuaModellRecoilQuestMCM.vStrengthCoeffH $PresetPath
+		SetINIFloat "Stats:vWeightInfluenceV" VisuaModellRecoilQuestMCM.vWeightInfluenceV $PresetPath
+		SetINIFloat "Stats:vWeightInfluenceH" VisuaModellRecoilQuestMCM.vWeightInfluenceH $PresetPath
+		SetINIFloat "Randomization:vIsRandomized" VisuaModellRecoilQuestMCM.vIsRandomized $PresetPath
+		SetINIFloat "Randomization:vRotationAsVertical" VisuaModellRecoilQuestMCM.vRotationAsVertical $PresetPath
+		
+		SetINIFloat "Ironsights:vConstantCoefficient" VisuaModellRecoilQuestMCM.vConstantCoefficient $PresetPath
+		SetINIFloat "Ironsights:vIronsightsSkillBonus" VisuaModellRecoilQuestMCM.vIronsightsSkillBonus $PresetPath
+		SetINIFloat "Ironsights:vIronsightsLimitsMultiplier" VisuaModellRecoilQuestMCM.vIronsightsLimitsMultiplier $PresetPath
+		
+		SetINIFloat "General:vVerticalLowerLimit" VisuaModellRecoilQuestMCM.vVlowLim $PresetPath
+		SetINIFloat "General:vVerticalUpperLimit" VisuaModellRecoilQuestMCM.vVupLim $PresetPath
+		SetINIFloat "General:vHorizontalLowerLimit" VisuaModellRecoilQuestMCM.vHlowLim $PresetPath
+		SetINIFloat "General:vHorizontalUpperLimit" VisuaModellRecoilQuestMCM.vHupLim $PresetPath
+		SetINIFloat "BUGFIXING:vVATSfix" VisuaModellRecoilQuestMCM.IsVats $PresetPath
+		SetINIFloat "BUGFIXING:vDebugAmmo" VisuaModellRecoilQuestMCM.vDebugAmmo $PresetPath
+		SetINIFloat "Individual:vUseIndividualRecoil" VisuaModellRecoilQuestMCM.vUseIndRec $PresetPath
+		SetINIFloat "Individual:vUseOldGenericFormula" VisuaModellRecoilQuestMCM.vUseOldGenericFormula $PresetPath
+		SetINIFloat "Stats:vUseAmmoPseudoCalc" VisuaModellRecoilQuestMCM.vUseAmmoPseudo $PresetPath
+		SetINIFloat "Randomization:vFirstShotMultiplierV" VisuaModellRecoilQuestMCM.vFirstShotMV $PresetPath
+		SetINIFloat "Randomization:vFirstShotMultiplierH" VisuaModellRecoilQuestMCM.vFirstShotMH $PresetPath
+		SetINIFloat "Randomization:vFirstShotRandomization" VisuaModellRecoilQuestMCM.vFirstShotR $PresetPath
+		SetINIFloat "Randomization:vFirstShotPeriod" VisuaModellRecoilQuestMCM.vFirstShotP $PresetPath
+	endif
+	
+	sv_Destruct vSetName
+end

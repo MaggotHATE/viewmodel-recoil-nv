@@ -1,0 +1,76 @@
+scn	vPresetButton
+
+int	vButton
+string_var PresetPath
+
+
+begin Function {vButton}
+
+	;Print "vButton=" + $vButton
+	Print "Loading " + $VisuaModellRecoilQuestMCM.PresetsList[vButton] + "..."
+	let VisuaModellRecoilQuestMCM.PresetName := VisuaModellRecoilQuestMCM.PresetsList[vButton]
+	
+	let PresetPath := "ProfilesVRecoil\Custom\"+$VisuaModellRecoilQuestMCM.PresetName
+	let VisuaModellRecoilQuestMCM.PresetPath := PresetPath
+	
+	set VisuaModellRecoilQuestMCM.vVerticalIntensity to GetINIFloat "General:vVerticalIntensity" $PresetPath
+	set VisuaModellRecoilQuestMCM.vHorizontalIntensity to GetINIFloat "General:vHorizontalIntensity" $PresetPath
+	set VisuaModellRecoilQuestMCM.vWeaponDamageCoeff to GetINIFloat "General:vWeaponDamageCoeff" $PresetPath
+	set VisuaModellRecoilQuestMCM.vWeaponDamageCoeffH to GetINIFloat "General:vWeaponDamageCoeffH" $PresetPath
+	set VisuaModellRecoilQuestMCM.vStrengthCoeffV to GetINIFloat "Stats:vStrengthCoeffV" $PresetPath
+	set VisuaModellRecoilQuestMCM.vStrengthCoeffH to GetINIFloat "Stats:vStrengthCoeffH" $PresetPath
+	set VisuaModellRecoilQuestMCM.vWeightInfluenceV to GetINIFloat "Stats:vWeightInfluenceV" $PresetPath
+	set VisuaModellRecoilQuestMCM.vWeightInfluenceH to GetINIFloat "Stats:vWeightInfluenceH" $PresetPath
+	set VisuaModellRecoilQuestMCM.vIsRandomized to GetINIFloat "Randomization:vIsRandomized" $PresetPath
+	set VisuaModellRecoilQuestMCM.vRotationAsVertical to GetINIFloat "Randomization:vRotationAsVertical" $PresetPath
+	
+	set VisuaModellRecoilQuestMCM.vConstantCoefficient to GetINIFloat "Ironsights:vConstantCoefficient" $PresetPath
+	set VisuaModellRecoilQuestMCM.vIronsightsSkillBonus to GetINIFloat "Ironsights:vIronsightsSkillBonus" $PresetPath
+	set VisuaModellRecoilQuestMCM.vIronsightsLimitsMultiplier to GetINIFloat "Ironsights:vIronsightsLimitsMultiplier" $PresetPath
+	
+	set VisuaModellRecoilQuestMCM.vVlowLim to GetINIFloat "General:vVerticalLowerLimit" $PresetPath
+	set VisuaModellRecoilQuestMCM.vVupLim to GetINIFloat "General:vVerticalUpperLimit" $PresetPath
+	set VisuaModellRecoilQuestMCM.vHlowLim to GetINIFloat "General:vHorizontalLowerLimit" $PresetPath
+	set VisuaModellRecoilQuestMCM.vHupLim to GetINIFloat "General:vHorizontalUpperLimit" $PresetPath
+	set VisuaModellRecoilQuestMCM.IsVats to GetINIFloat "BUGFIXING:vVATSfix" $PresetPath
+	set VisuaModellRecoilQuestMCM.vDebugAmmo to GetINIFloat "BUGFIXING:vDebugAmmo" $PresetPath
+	set VisuaModellRecoilQuestMCM.vUseIndRec to GetINIFloat "Individual:vUseIndividualRecoil" $PresetPath
+	set VisuaModellRecoilQuestMCM.vUseOldGenericFormula to GetINIFloat "Individual:vUseOldGenericFormula" $PresetPath
+	set VisuaModellRecoilQuestMCM.vUseAmmoPseudo to GetINIFloat "Stats:vUseAmmoPseudoCalc" $PresetPath
+	set VisuaModellRecoilQuestMCM.vFirstShotMV to GetINIFloat "Randomization:vFirstShotMultiplierV" $PresetPath
+	set VisuaModellRecoilQuestMCM.vFirstShotMH to GetINIFloat "Randomization:vFirstShotMultiplierH" $PresetPath
+	set VisuaModellRecoilQuestMCM.vFirstShotR to GetINIFloat "Randomization:vFirstShotRandomization" $PresetPath
+	set VisuaModellRecoilQuestMCM.vFirstShotP to GetINIFloat "Randomization:vFirstShotPeriod" $PresetPath
+	
+	SetINIFloat "General:vVerticalIntensity" VisuaModellRecoilQuestMCM.vVerticalIntensity "VM_Recoil.ini"
+	SetINIFloat "General:vHorizontalIntensity" VisuaModellRecoilQuestMCM.vHorizontalIntensity "VM_Recoil.ini"
+	SetINIFloat "General:vWeaponDamageCoeff" VisuaModellRecoilQuestMCM.vWeaponDamageCoeff "VM_Recoil.ini"
+	SetINIFloat "General:vWeaponDamageCoeffH" VisuaModellRecoilQuestMCM.vWeaponDamageCoeffH "VM_Recoil.ini"
+	SetINIFloat "Stats:vStrengthCoeffV" VisuaModellRecoilQuestMCM.vStrengthCoeffV "VM_Recoil.ini"
+	SetINIFloat "Stats:vStrengthCoeffH" VisuaModellRecoilQuestMCM.vStrengthCoeffH "VM_Recoil.ini"
+	SetINIFloat "Stats:vWeightInfluenceV" VisuaModellRecoilQuestMCM.vWeightInfluenceV "VM_Recoil.ini"
+	SetINIFloat "Stats:vWeightInfluenceH" VisuaModellRecoilQuestMCM.vWeightInfluenceH "VM_Recoil.ini"
+	SetINIFloat "Randomization:vIsRandomized" VisuaModellRecoilQuestMCM.vIsRandomized "VM_Recoil.ini"
+	SetINIFloat "Randomization:vRotationAsVertical" VisuaModellRecoilQuestMCM.vRotationAsVertical "VM_Recoil.ini"
+	
+	SetINIFloat "Ironsights:vConstantCoefficient" VisuaModellRecoilQuestMCM.vConstantCoefficient "VM_Recoil.ini"
+	SetINIFloat "Ironsights:vIronsightsSkillBonus" VisuaModellRecoilQuestMCM.vIronsightsSkillBonus "VM_Recoil.ini"
+	SetINIFloat "Ironsights:vIronsightsLimitsMultiplier" VisuaModellRecoilQuestMCM.vIronsightsLimitsMultiplier "VM_Recoil.ini"
+	
+	SetINIFloat "General:vVerticalLowerLimit" VisuaModellRecoilQuestMCM.vVlowLim "VM_Recoil.ini"
+	SetINIFloat "General:vVerticalUpperLimit" VisuaModellRecoilQuestMCM.vVupLim "VM_Recoil.ini"
+	SetINIFloat "General:vHorizontalLowerLimit" VisuaModellRecoilQuestMCM.vHlowLim "VM_Recoil.ini"
+	SetINIFloat "General:vHorizontalUpperLimit" VisuaModellRecoilQuestMCM.vHupLim "VM_Recoil.ini"
+	SetINIFloat "BUGFIXING:vVATSfix" VisuaModellRecoilQuestMCM.IsVats "VM_Recoil.ini"
+	SetINIFloat "BUGFIXING:vDebugAmmo" VisuaModellRecoilQuestMCM.vDebugAmmo "VM_Recoil.ini"
+	SetINIFloat "Individual:vUseIndividualRecoil" VisuaModellRecoilQuestMCM.vUseIndRec "VM_Recoil.ini"
+	SetINIFloat "Individual:vUseOldGenericFormula" VisuaModellRecoilQuestMCM.vUseOldGenericFormula "VM_Recoil.ini"
+	SetINIFloat "Stats:vUseAmmoPseudoCalc" VisuaModellRecoilQuestMCM.vUseAmmoPseudo "VM_Recoil.ini"
+	SetINIFloat "Randomization:vFirstShotMultiplierV" VisuaModellRecoilQuestMCM.vFirstShotMV "VM_Recoil.ini"
+	SetINIFloat "Randomization:vFirstShotMultiplierH" VisuaModellRecoilQuestMCM.vFirstShotMH "VM_Recoil.ini"
+	SetINIFloat "Randomization:vFirstShotRandomization" VisuaModellRecoilQuestMCM.vFirstShotR "VM_Recoil.ini"
+	SetINIFloat "Randomization:vFirstShotPeriod" VisuaModellRecoilQuestMCM.vFirstShotP "VM_Recoil.ini"
+	
+	SetUIFloat "StartMenu/MCM/_Reset" 1
+	
+end

@@ -26,6 +26,8 @@ string_var SvUseOldGenericFormula
 string_var SIsVats
 string_var SvDebugAmmo
 string_var SvIsRandomized
+string_var SvLoadPreset
+string_var SvSavePreset
 
 string_var vVerticalIntensityQ
 string_var vHorizontalIntensityQ
@@ -53,6 +55,8 @@ string_var vUseOldGenericFormulaQ
 string_var vVATSfixQ
 string_var vDebugAmmoQ
 string_var vIsRandomizedQ
+string_var vLoadPresetQ
+string_var vSavePresetQ
 
 float vVerticalIntensityD; to GetINIFloat "General:vVerticalIntensity" "ProfilesVRecoil\Default.ini"
 float vHorizontalIntensityD ;to GetINIFloat "General:vHorizontalIntensity" "ProfilesVRecoil\Default.ini"
@@ -94,7 +98,13 @@ array_var DefTrans
 array_var DefTransNEW
 array_var DefRotIS
 
-float timer
+array_var PresetsList
+array_var PresetValuesList
+array_var PresetVal
+string_var CustomPath
+string_var PresetName
+string_var PresetPath
+string_var PresetsButtons
 
 float vVerticalIntensity
 float vHorizontalIntensity
@@ -236,6 +246,8 @@ begin gamemode
 			set SvFirstShotMH to GetINIString "Randomization:vFirstShotMultiplierH" "ProfilesVRecoil\Translation.ini"
 			set SvFirstShotR to GetINIString "Randomization:vFirstShotRandomization" "ProfilesVRecoil\Translation.ini"
 			set SvFirstShotP to GetINIString "Randomization:vFirstShotPeriod" "ProfilesVRecoil\Translation.ini"
+			set SvLoadPreset to GetINIString "PRESETS:vLoadPreset" "ProfilesVRecoil\Translation.ini"
+			set SvSavePreset to GetINIString "PRESETS:vSavePreset" "ProfilesVRecoil\Translation.ini"
 		
 			set vVerticalIntensityQ to GetINIString "General:vVerticalIntensityQ" "ProfilesVRecoil\Translation.ini"
 			set vHorizontalIntensityQ to GetINIString "General:vHorizontalIntensityQ" "ProfilesVRecoil\Translation.ini"
@@ -265,9 +277,27 @@ begin gamemode
 			set vFirstShotMultiplierHQ to GetINIString "Randomization:vFirstShotMultiplierHQ" "ProfilesVRecoil\Translation.ini"
 			set vFirstShotRandomizationQ to GetINIString "Randomization:vFirstShotRandomizationQ" "ProfilesVRecoil\Translation.ini"
 			set vFirstShotPeriodQ to GetINIString "Randomization:vFirstShotPeriodQ" "ProfilesVRecoil\Translation.ini"
+			set vLoadPresetQ to GetINIString "PRESETS:vLoadPresetQ" "ProfilesVRecoil\Translation.ini"
+			set vSavePresetQ to GetINIString "PRESETS:vSavePresetQ" "ProfilesVRecoil\Translation.ini"
 		
 		endif
 		
+		let PresetsList := Ar_Construct "array"
+		let PresetValuesList := Ar_Construct "stringmap"
+		; let CustomPath := "Config\ProfilesVRecoil\Custom\"
+		let PresetsList := GetFilesInFolder $CustomPath
+		let PresetName := PresetsList[0]
+		; let PresetPath := "ProfilesVRecoil\Custom\"+$PresetName
+		; let PresetValuesList["vVerticalLowerLimitQ"] := vVerticalLowerLimitQ
+		; let PresetValuesList["vVATSfixQ"] := vVATSfixQ
+		; let PresetValuesList["vUseIndividualRecoilQ"] := vUseIndividualRecoilQ
+		; let PresetValuesList["vFirstShotRandomizationQ"] := vFirstShotRandomizationQ
+		; Print PresetsList[0]
+		; Print PresetsList[1]
+		; Print PresetName
+		
+		;SetINISection "Test" PresetValuesList $PresetName
+		;SetINIFloat "General:vVerticalUpperLimitQ" vVerticalIntensityD $PresetName
 	endif
 
 	
@@ -309,7 +339,39 @@ begin gamemode
 		SetINIFloat "Randomization:vFirstShotMultiplierH" vFirstShotMH "VM_Recoil.ini"
 		SetINIFloat "Randomization:vFirstShotRandomization" vFirstShotR "VM_Recoil.ini"
 		SetINIFloat "Randomization:vFirstShotPeriod" vFirstShotP "VM_Recoil.ini"
+		
+		; let PresetValuesList["vVerticalIntensity"] := vVerticalIntensity
+		; let PresetValuesList["vHorizontalIntensity"] := vHorizontalIntensity
+		; let PresetValuesList["vWeaponDamageCoeff"] := vWeaponDamageCoeff
+		; let PresetValuesList["vStrengthCoeffV"] := vStrengthCoeffV
+		; let PresetValuesList["vStrengthCoeffH"] := vStrengthCoeffH
+		; let PresetValuesList["vWeightInfluenceV"] := vWeightInfluenceV
+		; let PresetValuesList["vWeightInfluenceH"] := vWeightInfluenceH
+		; let PresetValuesList["vIsRandomized"] := vIsRandomized
+		; let PresetValuesList["vRotationAsVertical"] := vRotationAsVertical
+		; let PresetValuesList["vConstantCoefficient"] := vConstantCoefficient
+		; let PresetValuesList["vIronsightsSkillBonus"] := vIronsightsSkillBonus
+		; let PresetValuesList["vIronsightsLimitsMultiplier"] := vIronsightsLimitsMultiplier
+		; let PresetValuesList["vVerticalLowerLimit"] := vVlowLim
+		; let PresetValuesList["vVerticalUpperLimit"] := vVupLim
+		; let PresetValuesList["vHorizontalLowerLimit"] := vHlowLim
+		; let PresetValuesList["vHorizontalUpperLimit"] := vHupLim
+		; let PresetValuesList["vVATSfix"] := IsVats
+		; let PresetValuesList["vDebugAmmo"] := vDebugAmmo
+		; let PresetValuesList["vUseIndividualRecoil"] := vUseIndRec
+		; let PresetValuesList["vUseOldGenericFormula"] := vUseOldGenericFormula
+		; let PresetValuesList["vUseAmmoPseudoCalc"] := vUseAmmoPseudo
+		; let PresetValuesList["vFirstShotMultiplierV"] := vFirstShotMV
+		; let PresetValuesList["vFirstShotMultiplierH"] := vFirstShotMH
+		; let PresetValuesList["vFirstShotRandomization"] := vFirstShotR
+		; let PresetValuesList["vFirstShotPeriod"] := vFirstShotP
+		
+		;let PresetName := "Test1"
+		;let PresetPath := "ProfilesVRecoil\Custom\Test1"
+		;SetINISection $PresetName PresetValuesList $PresetPath
 	endif
+	
+	
 end
 
 Begin MenuMode 1013 ;an attempt to fix VATS-related bug, couldn't reproduce it though
@@ -459,6 +521,18 @@ Begin MenuMode 1013 ;an attempt to fix VATS-related bug, couldn't reproduce it t
 			SetUIFloat "StartMenu/MCM/*:1/*:28/_type" 4
 			SetUIFloat "StartMenu/MCM/*:1/*:28/_value" vDebugAmmo
 			
+			SetUIFloat "StartMenu/MCM/*:1/*:29/_enable" 1
+			SetUIString "StartMenu/MCM/*:1/*:29/_title" $SvLoadPreset
+			SetUIFloat "StartMenu/MCM/*:1/*:29/_type" 6
+			SetUIStringEx "StartMenu/MCM/*:1/*:29/_textoff" $PresetName
+			SetUIFloat "StartMenu/MCM/*:1/*:29/_indent" 2
+
+			SetUIFloat "StartMenu/MCM/*:1/*:30/_enable" 1
+			SetUIString "StartMenu/MCM/*:1/*:30/_title" $SvSavePreset
+			SetUIStringEx "StartMenu/MCM/*:1/*:30/_textoff" " "
+			SetUIFloat "StartMenu/MCM/*:1/*:30/_type" 6
+			SetUIFloat "StartMenu/MCM/*:1/*:30/_indent" 1
+			
 		elseif GetUIFloat "StartMenu/MCM/_Default"		;2 - DEFAULT
 			SetUIFloat "StartMenu/MCM/_Default" 0
 			SetUIFloat "StartMenu/MCM/_Reset" 1
@@ -548,6 +622,15 @@ Begin MenuMode 1013 ;an attempt to fix VATS-related bug, couldn't reproduce it t
 				set IsVats to OptionValue
 			elseif OptionID == 28
 				set vDebugAmmo to OptionValue		
+			elseif OptionID == 29
+				let PresetsList := GetFilesInFolder $CustomPath
+				let PresetsButtons := ""
+				foreach PresetVal <- PresetsList
+					let PresetsButtons += "|"+$*PresetVal
+				loop
+				MessageBoxExAlt vPresetButton $PresetsButtons
+			elseif OptionID == 30
+				ShowTextInputMenu vPresetButtonSave 400 200 $vSavePresetQ
 			endif
 			
 		elseif GetUIFloat "StartMenu/MCM/_ShowList" == 1		;4 - SHOW LIST
@@ -574,28 +657,28 @@ Begin MenuMode 1013 ;an attempt to fix VATS-related bug, couldn't reproduce it t
 				SetUIFloat "StartMenu/MCM/_Value" vVlowLim
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
-				SetUIFloat "StartMenu/MCM/_ValueMax" 5
+				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
 				SetUIString "StartMenu/MCM/*:2/_title" $SvVlowLim
 			elseif OptionID == 4
 				SetUIFloat "StartMenu/MCM/_Value" vVupLim
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
-				SetUIFloat "StartMenu/MCM/_ValueMax" 5
+				SetUIFloat "StartMenu/MCM/_ValueMax" 15
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
 				SetUIString "StartMenu/MCM/*:2/_title" $SvVupLim
 			elseif OptionID == 5
 				SetUIFloat "StartMenu/MCM/_Value" vHlowLim
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
-				SetUIFloat "StartMenu/MCM/_ValueMax" 5
+				SetUIFloat "StartMenu/MCM/_ValueMax" 2
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
 				SetUIString "StartMenu/MCM/*:2/_title" $SvHlowLim
 			elseif OptionID == 6
 				SetUIFloat "StartMenu/MCM/_Value" vHupLim
 				SetUIFloat "StartMenu/MCM/_ValueDecimal" 2
 				SetUIFloat "StartMenu/MCM/_ValueIncrement" 0.01
-				SetUIFloat "StartMenu/MCM/_ValueMax" 5
+				SetUIFloat "StartMenu/MCM/_ValueMax" 15
 				SetUIFloat "StartMenu/MCM/_ValueMin" 0
 				SetUIString "StartMenu/MCM/*:2/_title" $SvHupLim
 			elseif OptionID == 7
@@ -794,6 +877,10 @@ Begin MenuMode 1013 ;an attempt to fix VATS-related bug, couldn't reproduce it t
 					SetUIString "StartMenu/MCM/*:9/string" $vVATSfixQ
 				elseif IsHover == 28
 					SetUIString "StartMenu/MCM/*:9/string" $vDebugAmmoQ
+				elseif IsHover == 29
+					SetUIString "StartMenu/MCM/*:9/string" $vLoadPresetQ
+				elseif IsHover == 30
+					SetUIString "StartMenu/MCM/*:9/string" $vSavePresetQ
 				else
 					SetUIFloat "StartMenu/MCM/MCM_Info/visible" 0
 				endif
