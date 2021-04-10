@@ -284,9 +284,10 @@ begin gamemode
 		
 		let PresetsList := Ar_Construct "array"
 		let PresetValuesList := Ar_Construct "stringmap"
-		; let CustomPath := "Config\ProfilesVRecoil\Custom\"
+		let CustomPath := "Config\ProfilesVRecoil\Custom\"
 		let PresetsList := GetFilesInFolder $CustomPath
 		let PresetName := PresetsList[0]
+		
 		; let PresetPath := "ProfilesVRecoil\Custom\"+$PresetName
 		; let PresetValuesList["vVerticalLowerLimitQ"] := vVerticalLowerLimitQ
 		; let PresetValuesList["vVATSfixQ"] := vVATSfixQ
