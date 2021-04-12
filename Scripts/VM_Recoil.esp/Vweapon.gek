@@ -219,7 +219,49 @@ begin Function {rVM_Weapon}
 		;PrintToConsole "B42Inertia is: %g" HasInertia
 		;don't mind the var name, tried to replace damage with projectile params
 		
+		let vConst := 2 - GetWeaponIsAutomatic rVM_Weapon
 		
+		set CurAm to GetPlayerCurrentAmmo	
+		let CurAmEffVal := 1
+		;Print "CurAmEffVal is: " + $CurAmEffVal
+		
+		if eval Ar_HasKey VisuaModellRecoilQuest.FixedAmmos $CurAm
+			let CurAmEffVal:= VisuaModellRecoilQuest.FixedAmmos[$CurAm]
+			;Print "We have " + $CurAmEffVal + " at home"
+		else
+			; until GetNthAmmoEffect is fixed I have to add an empty effect, calc, write to array and delete effect
+			AddAmmoEffect CurAm dirdtydirtyAEfix
+			
+			set ii to GetNumAmmoEffects CurAm
+			;print "ii="+$ii + " in " + $CurAm
+			
+			if ii > 0
+				let CurAmEffType := 1
+				while ii > 0
+					;print "ii="+$ii
+					set CurAmEff to GetNthAmmoEffect CurAm ii
+					let CurAmEffType := GetAmmoEffectTraitNumeric CurAmEff 0
+					;Print "CurAmEff!: " + $CurAmEff + ", "+$CurAmEffType
+					if CurAmEffType == 0
+						let CurAmEffVal := GetAmmoEffectTraitNumeric CurAmEff 2
+						
+						;PrintToConsole "WARNING!: %g" CurAmEffVal
+						; just in case
+						if CurAmEffVal <= 0 
+							let CurAmEffVal := 1
+						endif
+					endif
+					let ii -= 1
+				loop
+			endif
+			
+			let VisuaModellRecoilQuest.FixedAmmos[$CurAm] := CurAmEffVal	
+			RemoveAmmoEffect CurAm dirdtydirtyAEfix
+		endif
+		;PrintToConsole "CurAmEffVal is: %g" CurAmEffVal
+		let wDam *= CurAmEffVal
+		;temporarily disabled for possible bugfix
+		; disregard that, let's try again
 		
 		if vUseAmmoPseudo == 1	
 			set isDebug to GetINIFloat "BUGFIXING:vDebugAmmo" "VM_Recoil.ini"

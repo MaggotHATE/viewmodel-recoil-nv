@@ -29,6 +29,7 @@ array_var DefRot
 array_var DefTrans
 array_var DefTransNEW
 array_var DefRotIS
+array_var FixedAmmos
 
 
 
@@ -67,9 +68,26 @@ float vUseAmmoPseudo
 
 float vRotationAsVertical
 
+ref JustSprint
+int JustIDX
+int JustHas
+short JustIs
+short JustButton
+short JustAnims
+
+float VSx
+float VSy
+float VSz
+float VSzT
+float VSzTd
+
+float IsSprintMod
+
 begin gamemode
 
 	if getgameloaded
+		
+		let FixedAmmos := Ar_Construct "stringmap"
 		
 		SetOnFireWeaponEventHandler Vweapon 1 player
 		
@@ -106,7 +124,10 @@ begin gamemode
 		
 		let MinCount := 0.814
 		let MinCountI := 0.814
+		
+
 	endif
+	
 	
 	; if player.getdead || player.getisragdolled
 		; player.SetNifBlockRotation "NeckController" 0 0 0
@@ -128,10 +149,12 @@ begin gamemode
 			let IS_Tick := 0
 	endif
 	
+
+
+	
+	
 	if IsPC1stPerson == 1 && DefA0 != 0 && DefA1 != 0 && DefA2 != 0 
-		
-		
-		
+
 		
 		
 		let DefTrans := player.GetNifBlockRotation "InertiaController"
@@ -195,6 +218,7 @@ begin gamemode
 		;player.SetNifBlockTranslation "NeckController" VMy -32 VMx
 		;player.SetNifBlockTranslation "Spine0Controller" VMy VMz VMx
 		;player.SetNifBlockTranslation "InertiaController" VMy 32 VMx
+		player.SetNifBlockTranslation "NeckController" 0 -32 0
 		
 		;non of these work in ironsighting, sadly
 		
