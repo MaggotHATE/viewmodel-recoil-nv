@@ -2,6 +2,7 @@ scn Vweapon
 
 ref rVM_Weapon
 
+ref vSelf
 
 float pSkill
 float pStr
@@ -403,14 +404,15 @@ begin Function {rVM_Weapon}
 				
 
 				if isDebug
-					PrintToConsole "DefX IR is: %g" DefX
-					PrintToConsole "DefY IR is: %g" DefY
-					PrintToConsole "DefZ IR is: %g" DefZ
+					;PrintToConsole "DefX IR is: %g" DefX
+					;PrintToConsole "DefY IR is: %g" DefY
+					;PrintToConsole "DefZ IR is: %g" DefZ
 				endif
 				
 				if isDebug
-					PrintToConsole "DefY +randWY is: %g" DefY
-					PrintToConsole "randWZ is: %g" randWZ
+					;PrintToConsole "DefY +randWY is: %g" DefY
+					;PrintToConsole "randWZ is: %g" randWZ
+					Print "vWeight=" + $vWeight
 				endif
 
 
@@ -422,10 +424,14 @@ begin Function {rVM_Weapon}
 					let DefY := vVInt*vConst + (vStrBased*vSCoeffV) + (vWDamCoeff*wDam - vSkillBased) - vWeight*vWInfV
 					let DefX := vHInt*vConst + (vStrBased*vSCoeffH) + (vWDamCoeff*wDam - vSkillBased)*vWDamCoeffH + vWeight*vWInfH
 				else
-					let DefY := (vVInt*vConst + vWDamCoeff*wDam - vWeight*vWInfV)*WSR_aggMastery*vSCoeffV
+					let DefY := (vVInt*vConst + vWDamCoeff*wDam - vWInfV/vWeight)*WSR_aggMastery*vSCoeffV
 					let DefX := (vHInt*vConst + vWDamCoeff*wDam*vWDamCoeffH + vWeight*vWInfH)*WSR_aggMastery*vSCoeffH
 					
 					;Print "DefY = " + $(vVInt*vConst) + " + " + $vSCoeffV + " + " + $(vWDamCoeff*wDam) + " - " + $(vWeight*vWInfV)
+				endif
+				
+				if isDebug
+					Print "vWeight=" + $vWeight
 				endif
 
 				if vRotationAsVertical == 0 
@@ -511,10 +517,15 @@ begin Function {rVM_Weapon}
 			let DefY := vVlowLim
 		endif
 		
-		if DefX > vHupLim 
-			let DefX := vHupLim
-		elseif DefX < vHlowLim
-			let DefX := vHlowLim
+		if (abs DefX) > vHupLim 
+			let DefX := vHupLim*randn
+		elseif (abs DefX) < vHlowLim*randn
+			let DefX := vHlowLim*randn
+		endif
+		
+		
+		if isDebug
+			Print "DefX Lim=" + $DefX + ", randn=" + $randn
 		endif
 		
 		if vRotationAsVertical == 0 
@@ -543,6 +554,11 @@ begin Function {rVM_Weapon}
 
 			let VisuaModellRecoilQuest.timer := 0
 		endif
+		
+		; let vSelf := GetCurrentScript
+		
+		; SetVariable "DefX", DefX, vSelf
+		; SetVariable "DefY", DefY, vSelf
 		
 		if isDebug 
 		

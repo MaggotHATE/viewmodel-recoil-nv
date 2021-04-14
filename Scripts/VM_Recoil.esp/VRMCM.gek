@@ -58,33 +58,33 @@ string_var vIsRandomizedQ
 string_var vLoadPresetQ
 string_var vSavePresetQ
 
-float vVerticalIntensityD; to GetINIFloat "General:vVerticalIntensity" "ProfilesVRecoil\Default.ini"
-float vHorizontalIntensityD ;to GetINIFloat "General:vHorizontalIntensity" "ProfilesVRecoil\Default.ini"
-float vWeaponDamageCoeffD ;to GetINIFloat "General:vWeaponDamageCoeff" "ProfilesVRecoil\Default.ini"
-float vWeaponDamageCoeffHD ;to GetINIFloat "General:vWeaponDamageCoeffH" "ProfilesVRecoil\Default.ini"
-float vStrengthCoeffVD ;to GetINIFloat "Stats:vStrengthCoeffV" "ProfilesVRecoil\Default.ini"
-float vStrengthCoeffHD ;to GetINIFloat "Stats:vStrengthCoeffH" "ProfilesVRecoil\Default.ini"
-float vWeightInfluenceVD ;to GetINIFloat "Stats:vWeightInfluenceV" "ProfilesVRecoil\Default.ini"
-float vWeightInfluenceHD ;to GetINIFloat "Stats:vWeightInfluenceH" "ProfilesVRecoil\Default.ini"
-float vIsRandomizedD ;to GetINIFloat "Randomization:vIsRandomized" "ProfilesVRecoil\Default.ini"
-float vRotationAsVerticalD ;to GetINIFloat "Randomization:vRotationAsVertical" "ProfilesVRecoil\Default.ini"
+float vVerticalIntensityD
+float vHorizontalIntensityD 
+float vWeaponDamageCoeffD 
+float vWeaponDamageCoeffHD 
+float vStrengthCoeffVD 
+float vStrengthCoeffHD 
+float vWeightInfluenceVD 
+float vWeightInfluenceHD 
+float vIsRandomizedD 
+float vRotationAsVerticalD 
 
-float vConstantCoefficientD ;to GetINIFloat "Ironsights:vConstantCoefficient" "ProfilesVRecoil\Default.ini"
-float vIronsightsSkillBonusD ;to GetINIFloat "Ironsights:vIronsightsSkillBonus" "ProfilesVRecoil\Default.ini"
-float vIronsightsLimitsMultiplierD ;to GetINIFloat "Ironsights:vIronsightsLimitsMultiplier" "ProfilesVRecoil\Default.ini"
+float vConstantCoefficientD 
+float vIronsightsSkillBonusD 
+float vIronsightsLimitsMultiplierD 
 
-float vVlowLimD ;to GetINIFloat "General:vVerticalLowerLimit" "ProfilesVRecoil\Default.ini"
-float vVupLimD ;to GetINIFloat "General:vVerticalUpperLimit" "ProfilesVRecoil\Default.ini"
-float vHlowLimD ;to GetINIFloat "General:vHorizontalLowerLimit" "ProfilesVRecoil\Default.ini"
-float vHupLimD ;to GetINIFloat "General:vHorizontalUpperLimit" "ProfilesVRecoil\Default.ini"
-float IsVatsD ;to GetINIFloat "BUGFIXING:vVATSfix" "ProfilesVRecoil\Default.ini"
-float vDebugAmmoD ;to GetINIFloat "BUGFIXING:vDebugAmmo" "ProfilesVRecoil\Default.ini"
-float vUseIndRecD ;to GetINIFloat "Individual:vUseIndividualRecoil" "ProfilesVRecoil\Default.ini"
-float vUseOldGenericFormulaD ;to GetINIFloat "Individual:vUseOldGenericFormula" "ProfilesVRecoil\Default.ini"
-float vUseAmmoPseudoD; to GetINIFloat "Stats:vUseAmmoPseudoCalc" "ProfilesVRecoil\Default.ini"
-float vFirstShotMVD; to GetINIFloat "Randomization:vFirstShotMultiplierV" "ProfilesVRecoil\Default.ini"
-float vFirstShotMHD; to GetINIFloat "Randomization:vFirstShotMultiplierH" "ProfilesVRecoil\Default.ini"
-float vFirstShotRD; to GetINIFloat "Randomization:vFirstShotRandomization" "ProfilesVRecoil\Default.ini"
+float vVlowLimD 
+float vVupLimD 
+float vHlowLimD 
+float vHupLimD
+float IsVatsD 
+float vDebugAmmoD 
+float vUseIndRecD 
+float vUseOldGenericFormulaD 
+float vUseAmmoPseudoD
+float vFirstShotMVD
+float vFirstShotMHD
+float vFirstShotRD
 float vFirstShotPD
 
 int Fin
@@ -93,10 +93,6 @@ int OptionID
 float OptionValue
 int IsHover
 
-array_var DefRot
-array_var DefTrans
-array_var DefTransNEW
-array_var DefRotIS
 
 array_var PresetsList
 array_var PresetValuesList
@@ -184,7 +180,7 @@ begin gamemode
 			set vFirstShotP to GetINIFloat "Randomization:vFirstShotPeriod" "VM_Recoil.ini"
 		endif
 		
-		if FileExists "Config\VM_Recoil.ini"
+		if FileExists "Config\ProfilesVRecoil\Default.ini"
 		
 			set vVerticalIntensityD to GetINIFloat "General:vVerticalIntensity" "ProfilesVRecoil\Default.ini"
 			set vHorizontalIntensityD to GetINIFloat "General:vHorizontalIntensity" "ProfilesVRecoil\Default.ini"
@@ -341,35 +337,7 @@ begin gamemode
 		SetINIFloat "Randomization:vFirstShotRandomization" vFirstShotR "VM_Recoil.ini"
 		SetINIFloat "Randomization:vFirstShotPeriod" vFirstShotP "VM_Recoil.ini"
 		
-		; let PresetValuesList["vVerticalIntensity"] := vVerticalIntensity
-		; let PresetValuesList["vHorizontalIntensity"] := vHorizontalIntensity
-		; let PresetValuesList["vWeaponDamageCoeff"] := vWeaponDamageCoeff
-		; let PresetValuesList["vStrengthCoeffV"] := vStrengthCoeffV
-		; let PresetValuesList["vStrengthCoeffH"] := vStrengthCoeffH
-		; let PresetValuesList["vWeightInfluenceV"] := vWeightInfluenceV
-		; let PresetValuesList["vWeightInfluenceH"] := vWeightInfluenceH
-		; let PresetValuesList["vIsRandomized"] := vIsRandomized
-		; let PresetValuesList["vRotationAsVertical"] := vRotationAsVertical
-		; let PresetValuesList["vConstantCoefficient"] := vConstantCoefficient
-		; let PresetValuesList["vIronsightsSkillBonus"] := vIronsightsSkillBonus
-		; let PresetValuesList["vIronsightsLimitsMultiplier"] := vIronsightsLimitsMultiplier
-		; let PresetValuesList["vVerticalLowerLimit"] := vVlowLim
-		; let PresetValuesList["vVerticalUpperLimit"] := vVupLim
-		; let PresetValuesList["vHorizontalLowerLimit"] := vHlowLim
-		; let PresetValuesList["vHorizontalUpperLimit"] := vHupLim
-		; let PresetValuesList["vVATSfix"] := IsVats
-		; let PresetValuesList["vDebugAmmo"] := vDebugAmmo
-		; let PresetValuesList["vUseIndividualRecoil"] := vUseIndRec
-		; let PresetValuesList["vUseOldGenericFormula"] := vUseOldGenericFormula
-		; let PresetValuesList["vUseAmmoPseudoCalc"] := vUseAmmoPseudo
-		; let PresetValuesList["vFirstShotMultiplierV"] := vFirstShotMV
-		; let PresetValuesList["vFirstShotMultiplierH"] := vFirstShotMH
-		; let PresetValuesList["vFirstShotRandomization"] := vFirstShotR
-		; let PresetValuesList["vFirstShotPeriod"] := vFirstShotP
-		
-		;let PresetName := "Test1"
-		;let PresetPath := "ProfilesVRecoil\Custom\Test1"
-		;SetINISection $PresetName PresetValuesList $PresetPath
+
 	endif
 	
 	
@@ -780,25 +748,25 @@ Begin MenuMode 1013 ;an attempt to fix VATS-related bug, couldn't reproduce it t
 			SetUIFloat "StartMenu/MCM/_ShowScale" 2
 			
 			if OptionID == 1
-				SetUIFloat "StartMenu/MCM/_Value" vVerticalIntensityD; GetINIFloat "General:vVerticalIntensity" "ProfilesVRecoil\Default.ini"
+				SetUIFloat "StartMenu/MCM/_Value" vVerticalIntensityD
 			elseif OptionID == 2
-				SetUIFloat "StartMenu/MCM/_Value" vHorizontalIntensityD; GetINIFloat "General:vHorizontalIntensity" "ProfilesVRecoil\Default.ini"
+				SetUIFloat "StartMenu/MCM/_Value" vHorizontalIntensityD
 			elseif OptionID == 3
-				SetUIFloat "StartMenu/MCM/_Value" vVlowLimD; GetINIFloat "General:vVerticalLowerLimit" "ProfilesVRecoil\Default.ini"
+				SetUIFloat "StartMenu/MCM/_Value" vVlowLimD
 			elseif OptionID == 4
-				SetUIFloat "StartMenu/MCM/_Value" vVupLimD;GetINIFloat "General:vVerticalUpperLimit" "ProfilesVRecoil\Default.ini"
+				SetUIFloat "StartMenu/MCM/_Value" vVupLimD
 			elseif OptionID == 5
-				SetUIFloat "StartMenu/MCM/_Value" vHlowLimD;GetINIFloat "General:vHorizontalLowerLimit" "ProfilesVRecoil\Default.ini"
+				SetUIFloat "StartMenu/MCM/_Value" vHlowLimD
 			elseif OptionID == 6
-				SetUIFloat "StartMenu/MCM/_Value" vHupLimD; GetINIFloat "General:vHorizontalUpperLimit" "ProfilesVRecoil\Default.ini"
+				SetUIFloat "StartMenu/MCM/_Value" vHupLimD
 			elseif OptionID == 7
-				SetUIFloat "StartMenu/MCM/_Value" vWeaponDamageCoeff; GetINIFloat "General:vWeaponDamageCoeff" "ProfilesVRecoil\Default.ini"
+				SetUIFloat "StartMenu/MCM/_Value" vWeaponDamageCoeff
 			elseif OptionID == 8
-				SetUIFloat "StartMenu/MCM/_Value" vWeaponDamageCoeffHD ;#(GetINIFloat "General:vWeaponDamageCoeffH" "ProfilesVRecoil\Default.ini")
+				SetUIFloat "StartMenu/MCM/_Value" vWeaponDamageCoeffHD 
 			elseif OptionID == 9
-				SetUIFloat "StartMenu/MCM/_Value" vStrengthCoeffVD;GetINIFloat "Stats:vWeightInfluenceV" "ProfilesVRecoil\Default.ini"
+				SetUIFloat "StartMenu/MCM/_Value" vStrengthCoeffVD
 			elseif OptionID == 10
-				SetUIFloat "StartMenu/MCM/_Value" vStrengthCoeffHD; GetINIFloat "Stats:vWeightInfluenceH" "ProfilesVRecoil\Default.ini"
+				SetUIFloat "StartMenu/MCM/_Value" vStrengthCoeffHD
 			elseif OptionID == 11
 				SetUIFloat "StartMenu/MCM/_Value" vWeightInfluenceVD
 			elseif OptionID == 12
