@@ -1,4 +1,4 @@
-Viewmodel Recoil - 0.011
+Viewmodel Recoil
 This mod adds "recoil" effect to the first person models only, meaning that camera isn't changed.
 Based on B42 Weapon Inertia model moving idea and Immersive Recoil 2.0 code for formula.
 
@@ -11,6 +11,7 @@ NV Compatibility Skeleton
 :: FEATURES::
 • Configurable recoil effect for 1st person models 
 • Separate parameters for horizontal and vertical movements
+• MCM with full configuration and presets to save and load
 • Compatible with B42 Weapon Inertia
 • Compatible with other recoil mods that don't work like B42 Weapon Inertia mod (there are none for now, afaik)
 
