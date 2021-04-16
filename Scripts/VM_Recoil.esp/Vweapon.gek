@@ -231,14 +231,16 @@ begin Function {rVM_Weapon}
 			;Print "We have " + $CurAmEffVal + " at home"
 		else
 			; until GetNthAmmoEffect is fixed I have to add an empty effect, calc, write to array and delete effect
-			AddAmmoEffect CurAm dirdtydirtyAEfix
+			; NEVERMIND indexes start form 0. This is what you get when you start programming from Lua
+			;AddAmmoEffect CurAm dirdtydirtyAEfix
 			
 			set ii to GetNumAmmoEffects CurAm
 			;print "ii="+$ii + " in " + $CurAm
-			
+		
 			if ii > 0
 				let CurAmEffType := 1
 				while ii > 0
+					let ii -= 1
 					;print "ii="+$ii
 					set CurAmEff to GetNthAmmoEffect CurAm ii
 					let CurAmEffType := GetAmmoEffectTraitNumeric CurAmEff 0
@@ -252,12 +254,12 @@ begin Function {rVM_Weapon}
 							let CurAmEffVal := 1
 						endif
 					endif
-					let ii -= 1
+					
 				loop
 			endif
 			
 			let VisuaModellRecoilQuest.FixedAmmos[$CurAm] := CurAmEffVal	
-			RemoveAmmoEffect CurAm dirdtydirtyAEfix
+			;RemoveAmmoEffect CurAm dirdtydirtyAEfix
 		endif
 		;PrintToConsole "CurAmEffVal is: %g" CurAmEffVal
 		let wDam *= CurAmEffVal
