@@ -153,83 +153,79 @@ begin gamemode
 
 	
 	
-	if IsPC1stPerson == 1 && DefA0 != 0 && DefA1 != 0 && DefA2 != 0 
-
+	if (IsPC1stPerson == 1 || IsModLoaded "CameraRecoil.esp") && (DefA0 != 0 || DefA1 != 0 || DefA2 != 0) 
 		
-		
-		let DefTrans := player.GetNifBlockRotation "InertiaController"
-		let VMxI := DefTrans[0]*MinCountI + DefA0*MinCountI
-		let VMyI := DefTrans[2]*MinCountI + DefA1*MinCountI
-		let VMzI := DefTrans[1]*MinCountI - DefA2*MinCountI
+		if IsPC1stPerson == 1
+			let DefTrans := player.GetNifBlockRotation "InertiaController"
+			let VMxI := DefTrans[0]*MinCountI + DefA0*MinCountI
+			let VMyI := DefTrans[2]*MinCountI + DefA1*MinCountI
+			let VMzI := DefTrans[1]*MinCountI - DefA2*MinCountI
 
-		let VMx := DefTrans[0]*MinCount + DefA0*MinCount;*HipNode
-		let VMy := DefTrans[2]*MinCount + DefA1*MinCount;*HipNode
-		let VMz := DefTrans[1]*MinCount - DefA2*MinCount;*HipNode
+			let VMx := DefTrans[0]*MinCount + DefA0*MinCount;*HipNode
+			let VMy := DefTrans[2]*MinCount + DefA1*MinCount;*HipNode
+			let VMz := DefTrans[1]*MinCount - DefA2*MinCount;*HipNode
 
 		;this multiplier should slowly zero all rotation - but only if we stop firing
 		;useless? probably, but movement feels less snappy monkaHmm
 		;let MinCount := 0.9
 		
 		
-		if VMx < 0.00001 && VMx > -0.00001 
-				let VMx := 0
-		endif
-		if VMy < 0.00001 && VMy > -0.00001 
-			let VMy := 0
-		endif
-		if VMz < 0.00001 && VMz > -0.00001 
-			let VMz := 0
-		endif
-		if VMxI < 0.00001 && VMxI > -0.00001 
-				let VMxI := 0
-		endif
-		if VMyI < 0.00001 && VMyI > -0.00001 
-			let VMyI := 0
-		endif
-		if VMzI < 0.00001 && VMzI > -0.00001 
-			let VMzI := 0
-		endif	
+			if VMx < 0.00001 && VMx > -0.00001 
+					let VMx := 0
+			endif
+			if VMy < 0.00001 && VMy > -0.00001 
+				let VMy := 0
+			endif
+			if VMz < 0.00001 && VMz > -0.00001 
+				let VMz := 0
+			endif
+			if VMxI < 0.00001 && VMxI > -0.00001 
+					let VMxI := 0
+			endif
+			if VMyI < 0.00001 && VMyI > -0.00001 
+				let VMyI := 0
+			endif
+			if VMzI < 0.00001 && VMzI > -0.00001 
+				let VMzI := 0
+			endif	
+			
+			if VMx > 10*MinCount
+				set VMx to 10*MinCount
+			elseif VMx < -10*MinCount
+				set VMx to -10*MinCount
+			endif
+			if VMy > 6*MinCount
+				set VMy to 6*MinCount
+			endif
 		
-		if VMx > 10*MinCount
-			set VMx to 10*MinCount
-		elseif VMx < -10*MinCount
-			set VMx to -10*MinCount
+			if VMx > 10*MinCount
+				let DefA0 := 0
+			elseif VMx < -10*MinCount
+				let DefA0 := 0
+			endif
+			if VMy > 6*MinCount
+				let DefA1 := 0
+			endif		
+		
 		endif
-		if VMy > 6*MinCount
-			set VMy to 6*MinCount
-		endif
-		
-		
-		
+
 		if GetPCUsingIronSights
 			; we don't need to adjust zeroing speed in ironsights. Probably.
-			player.SetNifBlockRotation "NeckController" VMxI VMzI VMyI
+			if IsPC1stPerson == 1
+				player.SetNifBlockRotation "NeckController" VMxI VMzI VMyI
+			endif
 			let DefA0 := DefA0 * MinCountI
 			let DefA1 := DefA1 * MinCountI
 			let DefA2 := DefA2 * MinCountI
 		else
-			player.SetNifBlockRotation "NeckController" VMx VMz VMy
+			if IsPC1stPerson == 1
+				player.SetNifBlockRotation "NeckController" VMx VMz VMy
+			endif
 			let DefA0 := DefA0 * MinCount
 			let DefA1 := DefA1 * MinCount
 			let DefA2 := DefA2 * MinCount			
-		endif
-		
-		;player.SetNifBlockRotation "Bip01 ThighsMain" VM_A1_0 VM_A1_1 VM_A1_2
-		;player.SetNifBlockTranslation "NeckController" VMy -32 VMx
-		;player.SetNifBlockTranslation "Spine0Controller" VMy VMz VMx
-		;player.SetNifBlockTranslation "InertiaController" VMy 32 VMx
-		player.SetNifBlockTranslation "NeckController" 0 -32 0
-		
-		;non of these work in ironsighting, sadly
-		
-		if VMx > 10*MinCount
-			let DefA0 := 0
-		elseif VMx < -10*MinCount
-			let DefA0 := 0
-		endif
-		if VMy > 6*MinCount
-			let DefA1 := 0
-		endif
+		endif			
+
 		
 		
 		if DefA1 < 0.0001 && DefA1 > -0.0001 

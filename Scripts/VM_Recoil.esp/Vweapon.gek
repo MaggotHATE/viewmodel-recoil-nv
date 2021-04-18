@@ -98,9 +98,11 @@ float vFirstShotH
 
 float vRotationAsVertical
 
+float timer
+
 begin Function {rVM_Weapon}
 
-	if IsPC1stPerson == 1
+	if IsPC1stPerson == 1 || IsModLoaded "CameraRecoil.esp" ; let's try to make TPS recoil work properly
 		; I have no idea how reading from ini files affects performance
 		;so I've added this feature for convenience and POSSIBLE optimization
 		if (GetINIFloat "Optimization:vDirectLoad" "VM_Recoil.ini") == 1
@@ -163,131 +165,129 @@ begin Function {rVM_Weapon}
 		; PrintToConsole "vWInfH is: %g" vWInfH
 		; PrintToConsole "vIsRand is: %g" vIsRand
 		
-		
-
-		let pStr := player.getav strength
-		if pStr < 0
-			let pStr := 0
-		elseif pStr > 11
-			let pStr := 11
-		endif
+		let timer := GetSecondsPassed
 		
 		let wSkillType := GetWeaponSkill rVM_Weapon
-		let wSkill := GetWeaponRequiredSkill rVM_Weapon
-		let wStr := GetWeaponRequiredStrength rVM_Weapon
-		
-		
-		
-		;PrintToConsole "wStr is: %g" wStr
-		
-		if vUseIndRec
-
-			
-			;Print "rVM_Weapon is: " + $WeaponSname
-			
-			;Print "WeaponSnameHAS is: Config\WeaponVRecoil\WeapAKMS.ini"
-			;Print "FileExists is: " + $WeaponSnameHASX
-			;Print "vUseIndRec is: " + $vUseIndRec
-		endif
-		
-		if wSkill < 5
-			let wSkill := 5
-		endif
-		
-		
-		
-		if wSkillType == 34
-			let pSkill := player.getav energyweapons
-		elseif wSkillType == 41
-			let pSkill := player.getav guns
-		elseif wSkillType == 33
-			let pSkill := player.getav bigguns
-		elseif wSkillType == 35
-			let pSkill := player.getav explosives	
-		endif
-		
-		if pSkill < 0
-			let pSkill := 0
-		elseif pSkill > 110
-			let pSkill := 110
-		endif
-		
-		;PrintToConsole "pSkill is: %g" pSkill
-		
-		let wDam := GetDamage rVM_Weapon
-		;PrintToConsole "wDam is: %g" wDam
-		let HasInertia := IsModLoaded "B42Inertia.esp"
-		;PrintToConsole "B42Inertia is: %g" HasInertia
-		;don't mind the var name, tried to replace damage with projectile params
-		
-		let vConst := 2 - GetWeaponIsAutomatic rVM_Weapon
-		
-		set CurAm to GetPlayerCurrentAmmo	
-		let CurAmEffVal := 1
-		;Print "CurAmEffVal is: " + $CurAmEffVal
-		
-		if eval Ar_HasKey VisuaModellRecoilQuest.FixedAmmos $CurAm
-			let CurAmEffVal:= VisuaModellRecoilQuest.FixedAmmos[$CurAm]
-			;Print "We have " + $CurAmEffVal + " at home"
-		else
-			; until GetNthAmmoEffect is fixed I have to add an empty effect, calc, write to array and delete effect
-			; NEVERMIND indexes start form 0. This is what you get when you start programming from Lua
-			;AddAmmoEffect CurAm dirdtydirtyAEfix
-			
-			set ii to GetNumAmmoEffects CurAm
-			;print "ii="+$ii + " in " + $CurAm
-		
-			if ii > 0
-				let CurAmEffType := 1
-				while ii > 0
-					let ii -= 1
-					;print "ii="+$ii
-					set CurAmEff to GetNthAmmoEffect CurAm ii
-					let CurAmEffType := GetAmmoEffectTraitNumeric CurAmEff 0
-					;Print "CurAmEff!: " + $CurAmEff + ", "+$CurAmEffType
-					if CurAmEffType == 0
-						let CurAmEffVal := GetAmmoEffectTraitNumeric CurAmEff 2
-						
-						;PrintToConsole "WARNING!: %g" CurAmEffVal
-						; just in case
-						if CurAmEffVal <= 0 
-							let CurAmEffVal := 1
-						endif
-					endif
-					
-				loop
-			endif
-			
-			let VisuaModellRecoilQuest.FixedAmmos[$CurAm] := CurAmEffVal	
-			;RemoveAmmoEffect CurAm dirdtydirtyAEfix
-		endif
-		;PrintToConsole "CurAmEffVal is: %g" CurAmEffVal
-		let wDam *= CurAmEffVal
-		;temporarily disabled for possible bugfix
-		; disregard that, let's try again
-		
-		if vUseAmmoPseudo == 1	
-			set isDebug to GetINIFloat "BUGFIXING:vDebugAmmo" "VM_Recoil.ini"
-			
-			if isDebug 
-				Print "Damage before " + $wDam 
-			endif
-			
-			let wDam := Call vGetAmmoCalc wDam
-			
-			if isDebug 
-				Print "Damage after " + $wDam
-			endif
-		endif		
-		;PrintToConsole "randn is: %g" randn
 		
 		if wSkillType !=34 && wSkillType !=41 && wSkillType != 33 && wSkillType != 35
 			let DefY := 0
 			let DefX := 0
 			let DefZ := 0
-			
-			;PrintToConsole "wSkillType is: %g" wSkillType
+		
+			let timer -= GetSecondsPassed
+			if isDebug 
+				Print "Your weapon probably shouldn't have any recoil. In " + $timer + "s"
+			endif
 		else
+			let pStr := player.getav strength
+			if pStr < 1
+				let pStr := 1
+			elseif pStr > 11
+				let pStr := 11
+			endif
+			
+			let wSkill := GetWeaponRequiredSkill rVM_Weapon
+			let wStr := GetWeaponRequiredStrength rVM_Weapon
+			
+			;PrintToConsole "wStr is: %g" wStr
+			
+			if wSkill < 5
+				let wSkill := 5
+			endif
+			if wStr < 1
+				let wStr := 1
+			endif
+			
+			if wSkillType == 34
+				let pSkill := player.getav energyweapons
+			elseif wSkillType == 41
+				let pSkill := player.getav guns
+			elseif wSkillType == 33
+				let pSkill := player.getav bigguns
+			elseif wSkillType == 35
+				let pSkill := player.getav explosives	
+			endif
+			
+			if pSkill < 1
+				let pSkill := 1
+			elseif pSkill > 110
+				let pSkill := 110
+			endif
+			
+			;PrintToConsole "pSkill is: %g" pSkill
+			
+			let wDam := GetDamage rVM_Weapon
+			;PrintToConsole "wDam is: %g" wDam
+			let HasInertia := IsModLoaded "B42Inertia.esp"
+			;PrintToConsole "B42Inertia is: %g" HasInertia
+			;don't mind the var name, tried to replace damage with projectile params
+			
+			let vConst := 2 - GetWeaponIsAutomatic rVM_Weapon
+			
+		; AMMO EFFECTS
+			set CurAm to GetPlayerCurrentAmmo	
+			let CurAmEffVal := 1
+			;Print "CurAmEffVal is: " + $CurAmEffVal
+			
+			if eval Ar_HasKey VisuaModellRecoilQuest.FixedAmmos $CurAm
+			let CurAmEffVal:= VisuaModellRecoilQuest.FixedAmmos[$CurAm]
+			;Print "We have " + $CurAmEffVal + " at home"
+			else
+				; until GetNthAmmoEffect is fixed I have to add an empty effect, calc, write to array and delete effect
+				; NEVERMIND indexes start form 0. This is what you get when you start programming from Lua
+				;AddAmmoEffect CurAm dirdtydirtyAEfix
+				
+				set ii to GetNumAmmoEffects CurAm
+				;print "ii="+$ii + " in " + $CurAm
+			
+				if ii > 0
+					let CurAmEffType := 1
+					while ii > 0
+						let ii -= 1
+						;print "ii="+$ii
+						set CurAmEff to GetNthAmmoEffect CurAm ii
+						let CurAmEffType := GetAmmoEffectTraitNumeric CurAmEff 0
+						;Print "CurAmEff!: " + $CurAmEff + ", "+$CurAmEffType
+						if CurAmEffType == 0
+							let CurAmEffVal := GetAmmoEffectTraitNumeric CurAmEff 2
+							
+							;PrintToConsole "WARNING!: %g" CurAmEffVal
+							; just in case
+							if CurAmEffVal <= 0 
+								let CurAmEffVal := 1
+							endif
+						endif
+						
+					loop
+				endif
+				
+				let VisuaModellRecoilQuest.FixedAmmos[$CurAm] := CurAmEffVal	
+				;RemoveAmmoEffect CurAm dirdtydirtyAEfix
+			endif
+			;PrintToConsole "CurAmEffVal is: %g" CurAmEffVal
+			let wDam *= CurAmEffVal
+			
+		; AMMO EFFECTS END
+		
+		; CALIBERS
+			
+			if vUseAmmoPseudo == 1	
+				set isDebug to GetINIFloat "BUGFIXING:vDebugAmmo" "VM_Recoil.ini"
+				
+				if isDebug 
+					Print "Damage before " + $wDam 
+				endif
+				
+				let wDam := Call vGetAmmoCalc wDam
+				
+				if isDebug 
+					Print "Damage after " + $wDam
+				endif
+			endif	
+		
+		;CALIBERS END
+		
+		
 			let vConst := 2 - GetWeaponIsAutomatic rVM_Weapon
 			
 			;PrintToConsole "GetNumAmmoEffects is: %g" ii
@@ -428,13 +428,13 @@ begin Function {rVM_Weapon}
 				else
 					let DefY := (vVInt*vConst + vWDamCoeff*wDam - vWInfV/vWeight)*WSR_aggMastery*vSCoeffV
 					let DefX := (vHInt*vConst + vWDamCoeff*wDam*vWDamCoeffH + vWeight*vWInfH)*WSR_aggMastery*vSCoeffH
-					
-					;Print "DefY = " + $(vVInt*vConst) + " + " + $vSCoeffV + " + " + $(vWDamCoeff*wDam) + " - " + $(vWeight*vWInfV)
+					if isDebug
+						Print "DefY = " + $(vVInt*vConst) + " + " + $vSCoeffV + " + " + $(vWDamCoeff*wDam) + " - " + $(vWeight*vWInfV)
+						;Print "vWeight=" + $vWeight
+					endif
 				endif
 				
-				if isDebug
-					Print "vWeight=" + $vWeight
-				endif
+				
 
 				if vRotationAsVertical == 0 
 					let DefZ := DefX
@@ -492,26 +492,29 @@ begin Function {rVM_Weapon}
 		
 		
 		;this is where we try to take B42 Inertia into account
+		; after all the updates this seems to be unnecessary, but JUST IN CASE IT WILL BE NOT
 		if HasInertia == 1
 			if (FileExists "Config\B42Inertia.ini") && (GetINIFloat "Tuning:bRotationMode" "B42Inertia.ini") > 0
-				let fixMult := 0.812
+				let fixMult := 0.9
 				let fixMultIS := 0.95
 				;let DefZ := DefZ*0.2
 			elseif (GetINIFloat "Tuning:bDebugMode" "B42Inertia.ini") == 0 ;this was only for debugging, I got tired of switching plugins off, sorry
-				let fixMult := 0.814
-				let fixMultIS := 0.814
+				let fixMult := 0.9
+				let fixMultIS := 0.95
 				;PrintToConsole "fixMultIS is: %g" fixMultIS
 			else
-				let fixMult := 0.965
+				let fixMult := 0.9
 				let fixMultIS := 0.95
 				;let DefZ := DefZ*-1
 			endif
 		else
-			let fixMult := 0.814
-			let fixMultIS := 0.814
+			let fixMult := 0.9
+			let fixMultIS := 0.95
 			;PrintToConsole "fixMultIS is: %g" fixMultIS
 			;let DefZ := DefZ*-1
 		endif
+		
+		
 		
 		if DefY > vVupLim 
 			let DefY := vVupLim
@@ -531,10 +534,10 @@ begin Function {rVM_Weapon}
 		endif
 		
 		if vRotationAsVertical == 0 
-			if DefZ > vHupLim 
-				let DefZ := vHupLim
-			elseif DefZ < vHlowLim
-				let DefZ := vHlowLim
+			if (abs DefZ) > vHupLim 
+				let DefZ := vHupLim*randn
+			elseif (abs DefZ) < vHlowLim*randn
+				let DefZ := vHlowLim*randn
 			endif
 		else
 			if DefZ > vVupLim 
@@ -563,13 +566,15 @@ begin Function {rVM_Weapon}
 		; SetVariable "DefY", DefY, vSelf
 		
 		if isDebug 
-		
-			PrintToConsole "DefX is: %g" DefX*vFirstShot
-			PrintToConsole "DefY is: %g" DefY*vFirstShot
-			PrintToConsole "DefZ is: %g" DefZ*vFirstShot
-			PrintToConsole "VMx is: %g" VisuaModellRecoilQuest.VMx
-			PrintToConsole "VMy is: %g" VisuaModellRecoilQuest.VMy
-			PrintToConsole "VMz is: %g" VisuaModellRecoilQuest.VMz
+			let timer -= GetSecondsPassed
+			
+			Print "DefX is: " + $DefX
+			Print "DefY is: " + $DefY
+			Print "DefZ is: " + $DefZ
+			Print "VMx is: " + $VisuaModellRecoilQuest.VMx
+			Print "VMy is: " + $VisuaModellRecoilQuest.VMy
+			Print "VMz is: " + $VisuaModellRecoilQuest.VMz + " in "+$timer + "s"
+			
 		
 		endif
 
