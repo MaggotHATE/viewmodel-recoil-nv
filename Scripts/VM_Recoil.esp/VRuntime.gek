@@ -86,6 +86,7 @@ float VSzT
 float VSzTd
 
 float IsSprintMod
+float ToCamera
 
 begin gamemode
 
@@ -157,8 +158,8 @@ begin gamemode
 
 	
 	
-	if (IsPC1stPerson == 1 || IsModLoaded "CameraRecoil.esp") && (DefA0 != 0 || DefA1 != 0 || DefA2 != 0) 
-		
+	if (IsPC1stPerson == 1 || IsModLoaded "CameraRecoil.esp") && (DefA0 != 0 || DefA1 != 0 || DefA2 != 0)
+	
 		if IsPC1stPerson == 1
 			;let DefTrans := player.GetNifBlockRotation "InertiaController"
 			; what?
@@ -245,6 +246,7 @@ begin gamemode
 		if DefA2 < 0.0001 && DefA2 > -0.0001 
 			let DefA2 := 0
 		endif
+	
 	endif
 
 	

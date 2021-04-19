@@ -460,9 +460,12 @@ begin Function {rVM_Weapon}
 			
 		endif
 		
-		; PrintToConsole "DefX 0 is: %g" DefX
-		; PrintToConsole "DefY 0 is: %g" DefY
-		; PrintToConsole "DefZ 0 is: %g" DefZ
+		if isDebug
+			PrintToConsole "DefX 0 is: %g" DefX
+			PrintToConsole "DefY 0 is: %g" DefY
+			PrintToConsole "DefZ 0 is: %g" DefZ
+		endif
+		
 		
 		let vFirstShotV := 1
 		let vFirstShotH := 1
@@ -565,6 +568,8 @@ begin Function {rVM_Weapon}
 
 			
 			let VisuaModellRecoilQuest.timer := 0
+		
+			call VMRhandler rVM_Weapon DefX DefY DefZ
 		endif
 		
 		; let vSelf := GetCurrentScript
@@ -573,7 +578,7 @@ begin Function {rVM_Weapon}
 		; SetVariable "DefY", DefY, vSelf
 		
 		if isDebug 
-			let timer -= GetSecondsPassed
+			;let timer -= GetSecondsPassed
 			
 			Print "DefX is: " + $DefX
 			Print "DefY is: " + $DefY
