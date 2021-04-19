@@ -493,14 +493,15 @@ begin Function {rVM_Weapon}
 		
 		;this is where we try to take B42 Inertia into account
 		; after all the updates this seems to be unnecessary, but JUST IN CASE IT WILL BE NOT
-		if HasInertia == 1
-			if (FileExists "Config\B42Inertia.ini") && (GetINIFloat "Tuning:bRotationMode" "B42Inertia.ini") > 0
-				let fixMult := 0.9
+		; IT STILL IS NECESSARY
+		if HasInertia == 1 && (FileExists "Config\B42Inertia.ini")
+			if  (GetINIFloat "Tuning:bRotationMode" "B42Inertia.ini") > 0 && (GetINIFloat "Tuning:bDebugMode" "B42Inertia.ini") > 0
+				let fixMult := 0.72
 				let fixMultIS := 0.95
 				;let DefZ := DefZ*0.2
 			elseif (GetINIFloat "Tuning:bDebugMode" "B42Inertia.ini") == 0 ;this was only for debugging, I got tired of switching plugins off, sorry
-				let fixMult := 0.9
-				let fixMultIS := 0.95
+				let fixMult := 0.72
+				let fixMultIS := 0.77
 				;PrintToConsole "fixMultIS is: %g" fixMultIS
 			else
 				let fixMult := 0.9
@@ -508,13 +509,13 @@ begin Function {rVM_Weapon}
 				;let DefZ := DefZ*-1
 			endif
 		else
-			let fixMult := 0.9
-			let fixMultIS := 0.95
+			let fixMult := 0.72
+			let fixMultIS := 0.77
 			;PrintToConsole "fixMultIS is: %g" fixMultIS
 			;let DefZ := DefZ*-1
 		endif
 		
-		
+		;PrintToConsole "fixMultIS is: %g" fixMultIS
 		
 		if DefY > vVupLim 
 			let DefY := vVupLim
@@ -556,7 +557,13 @@ begin Function {rVM_Weapon}
 			let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY;*fixMult
 			
 			let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ;*randn;*fixMult
+			
+			let VisuaModellRecoilQuest.DefA0C := DefX;*fixMult
+			let VisuaModellRecoilQuest.DefA1C := DefY;*fixMult
+			
+			let VisuaModellRecoilQuest.DefA2C := DefZ;*randn;*fixMult
 
+			
 			let VisuaModellRecoilQuest.timer := 0
 		endif
 		
