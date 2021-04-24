@@ -6,9 +6,9 @@ float DefY
 float DefZ
 
 Begin Function {vmrWeapon DefX DefY DefZ}
-	Print "DefX = " + $DefX
-	Print "DefY = " + $DefY
-	Print "DefZ = " + $DefZ
+	; Print "DefX = " + $DefX
+	; Print "DefY = " + $DefY
+	; Print "DefZ = " + $DefZ
 	
 	call Cweapon vmrWeapon DefY DefX DefZ
 end
