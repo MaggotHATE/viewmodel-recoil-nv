@@ -8,9 +8,21 @@ float VMxI
 float VMyI
 float VMzI
 
+float VMxR
+float VMyR
+float VMzR
+
+float VMxIR
+float VMyIR
+float VMzIR
+
 float DefA0
 float DefA1
 float DefA2
+
+float DefA0R
+float DefA1R
+float DefA2R
 
 float DefA0C
 float DefA1C
@@ -18,6 +30,8 @@ float DefA2C
 
 float MinCount
 float MinCountI
+float MinCountR
+float MinCountIR
 
 float VM_tx
 float VM_ty
@@ -88,6 +102,8 @@ float VSzTd
 float IsSprintMod
 float ToCamera
 
+string_var ChosenController
+
 begin gamemode
 
 	if getgameloaded
@@ -121,7 +137,7 @@ begin gamemode
 		
 		;PrintToConsole "getgameloaded is: %g" vVerticalIntensity
 		
-		player.SetNifBlockRotation "NeckController" 0 0 0
+		
 		
 		let HipNode := 0.1
 		let IS_Tick := 0
@@ -130,7 +146,9 @@ begin gamemode
 		let MinCount := 0.9
 		let MinCountI := 0.95
 		
-
+		let ChosenController := "NeckController"
+		
+		player.SetNifBlockRotation ChosenController 0 0 0
 	endif
 	
 	
@@ -158,7 +176,7 @@ begin gamemode
 
 	
 	
-	if (IsPC1stPerson == 1 || IsModLoaded "CameraRecoil.esp") && (DefA0 != 0 || DefA1 != 0 || DefA2 != 0)
+	if (IsPC1stPerson == 1 || IsModLoaded "CameraRecoil.esp") && (DefA0 != 0 || DefA1 != 0 || DefA2 != 0 || DefA0R != 0 || DefA2R != 0 || DefA1R != 0)
 	
 		if IsPC1stPerson == 1
 			;let DefTrans := player.GetNifBlockRotation "InertiaController"
@@ -212,28 +230,86 @@ begin gamemode
 			endif
 			if VMy > 6*MinCount
 				let DefA1 := 0
-			endif		
+			endif
+
+			;------------------Inertia
+			
+			
+			let DefTransNEW := player.GetNifBlockRotation "InertiaController"
+			let VMxIR := DefTransNEW[0]*MinCountIR + DefA0R*MinCountIR
+			let VMyIR := DefTransNEW[2]*MinCountIR + DefA1R*MinCountIR
+			let VMzIR := DefTransNEW[1]*MinCountIR - DefA2R*MinCountIR
+
+			let VMxR := DefTransNEW[0]*MinCountR + DefA0R*MinCountR;*HipNode
+			let VMyR := DefTransNEW[2]*MinCountR + DefA1R*MinCountR;*HipNode
+			let VMzR := DefTransNEW[1]*MinCountR - DefA2R*MinCountR;*HipNode			
+			
+			if VMxR < 0.00001 && VMxR > -0.00001 
+				let VMxR := 0
+			endif
+			if VMyR < 0.00001 && VMyR > -0.00001 
+				let VMyR := 0
+			endif
+			if VMzR < 0.00001 && VMzR > -0.00001 
+				let VMzR := 0
+			endif
+			if VMxIR < 0.00001 && VMxIR > -0.00001 
+				let VMxIR := 0
+			endif
+			if VMyIR < 0.00001 && VMyIR > -0.00001 
+				let VMyIR := 0
+			endif
+			if VMzIR < 0.00001 && VMzIR > -0.00001 
+				let VMzIR := 0
+			endif	
+			
+			if VMxR > 10*MinCountR
+				set VMxR to 10*MinCountR
+			elseif VMxR < -10*MinCountR
+				set VMxR to -10*MinCountR
+			endif
+			if VMyR > 6*MinCountR
+				set VMyR to 6*MinCountR
+			endif
 		
+			if VMxR > 10*MinCountR
+				let DefA0R := 0
+			elseif VMxR < -10*MinCountR
+				let DefA0R := 0
+			endif
+			if VMyR > 6*MinCount
+				let DefA1R := 0
+			endif			
 		endif
 
-			if GetPCUsingIronSights
-				; we don't need to adjust zeroing speed in ironsights. Probably.
-				if IsPC1stPerson == 1
-					player.SetNifBlockRotation "NeckController" VMxI VMzI VMyI
-					;player.SetNifBlockRotation "InertiaController" VMxI VMzI VMyI
-				endif
-				let DefA0 := DefA0 * MinCountI
-				let DefA1 := DefA1 * MinCountI
-				let DefA2 := DefA2 * MinCountI
-			else
-				if IsPC1stPerson == 1
-					player.SetNifBlockRotation "NeckController" VMx VMz VMy
-					;player.SetNifBlockRotation "InertiaController" VMx VMz VMy
-				endif
-				let DefA0 := DefA0 * MinCount
-				let DefA1 := DefA1 * MinCount
-				let DefA2 := DefA2 * MinCount			
-			endif			
+		if GetPCUsingIronSights
+			; we don't need to adjust zeroing speed in ironsights. Probably.
+			;if IsPC1stPerson == 1
+			player.SetNifBlockRotation "NeckController" VMxI VMzI VMyI
+			player.SetNifBlockRotation "InertiaController" VMxIR VMzIR VMyIR
+				;player.SetNifBlockRotation "InertiaController" VMxI VMzI VMyI
+			;endif
+			let DefA0 := DefA0 * MinCountI
+			let DefA1 := DefA1 * MinCountI
+			let DefA2 := DefA2 * MinCountI
+			let DefA0R := DefA0R * MinCountIR
+			let DefA1R := DefA1R * MinCountIR
+			let DefA2R := DefA2R * MinCountIR
+			
+		else
+			;if IsPC1stPerson == 1
+			player.SetNifBlockRotation"NeckController" VMx VMz VMy
+			player.SetNifBlockRotation "InertiaController" VMxR VMzR VMyR
+				;player.SetNifBlockRotation "InertiaController" VMx VMz VMy
+			;endif	
+			let DefA0 := DefA0 * MinCount
+			let DefA1 := DefA1 * MinCount
+			let DefA2 := DefA2 * MinCount
+			let DefA0R := DefA0R * MinCountR
+			let DefA1R := DefA1R * MinCountR
+			let DefA2R := DefA2R * MinCountR
+			
+		endif			
 
 		
 		
@@ -246,7 +322,28 @@ begin gamemode
 		if DefA2 < 0.0001 && DefA2 > -0.0001 
 			let DefA2 := 0
 		endif
-	
+		
+		if DefA1R < 0.0001 && DefA1R > -0.0001 
+			let DefA1R := 0
+		endif
+		if DefA0R < 0.0001 && DefA0R > -0.0001 
+			let DefA0R := 0
+		endif
+		if DefA2R < 0.0001 && DefA2R > -0.0001 
+			let DefA2R := 0
+		endif
+		
+		; print "-----------------------------"
+		; print "DefA0="+$DefA0 +" " + $VMx
+		; print "DefA1="+$DefA1 +" " + $VMy
+		; print "DefA2="+$DefA2 +" " + $VMz
+		
+	elseif (DefA0 == 0 || DefA1 == 0 || DefA2 == 0) && (VMx != 0 || VMy != 0 || VMz != 0) 
+		if MinCount < MinCountR
+			player.SetNifBlockRotation"NeckController" 0 0 0
+		else
+			player.SetNifBlockRotation "InertiaController" 0 0 0	
+		endif
 	endif
 
 	

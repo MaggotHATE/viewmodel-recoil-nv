@@ -41,6 +41,8 @@ float IsVats
 
 float fixMult
 float fixMultIS
+float fixMultR
+float fixMultISR
 
 float vVlowLim
 float vVupLim
@@ -100,6 +102,8 @@ float vFirstShotH
 float vRotationAsVertical
 
 float timer
+
+string_var ChosenController
 
 begin Function {rVM_Weapon}
 
@@ -317,7 +321,7 @@ begin Function {rVM_Weapon}
 
 				;PrintToConsole "wDam result is: %g" wDam
 				
-				if GetPCUsingIronSights
+				if GetPCUsingIronSights		
 					let vISconst := GetINIFloat "Ironsights:vConstantCoefficient" "VM_Recoil.ini"
 					;let vISstrBonus := GetINIFloat "Ironsights:vIronsightsStrengthBonus" "VM_Recoil.ini"
 					let vISskillBonus := GetINIFloat "Ironsights:vIronsightsSkillBonus" "VM_Recoil.ini"
@@ -330,7 +334,6 @@ begin Function {rVM_Weapon}
 					let vVlowLim *= vISlimitMult
 					let vHupLim *= vISlimitMult
 					let vHlowLim *= vISlimitMult
-					
 				endif
 				
 				let vStrBased := wStr/pStr ; min 0,091 max 10, -
@@ -514,23 +517,35 @@ begin Function {rVM_Weapon}
 				;this is where we try to take B42 Inertia into account
 				; after all the updates this seems to be unnecessary, but JUST IN CASE IT WILL BE NOT
 				; IT STILL IS NECESSARY
+				let ChosenController := VisuaModellRecoilQuest.ChosenController
 				if HasInertia == 1 && (FileExists "Config\B42Inertia.ini")
-					if  (GetINIFloat "Tuning:bRotationMode" "B42Inertia.ini") > 0 && (GetINIFloat "Tuning:bDebugMode" "B42Inertia.ini") > 0
+					if (GetINIFloat "Tuning:bRotationMode" "B42Inertia.ini") > 0 && (GetINIFloat "Tuning:bDebugMode" "B42Inertia.ini") > 0
 						let fixMult := 0.72
 						let fixMultIS := 0.95
+						let fixMultR := 0.9
+						let fixMultISR := 0.95
 						;let DefZ := DefZ*0.2
+						;print "New!"
 					elseif (GetINIFloat "Tuning:bDebugMode" "B42Inertia.ini") == 0 ;this was only for debugging, I got tired of switching plugins off, sorry
 						let fixMult := 0.72
-						let fixMultIS := 0.77
+						let fixMultIS := 0.44
+						let fixMultR := 0.72
+						let fixMultISR := 0.44
 						;PrintToConsole "fixMultIS is: %g" fixMultIS
+						
 					else
 						let fixMult := 0.9
 						let fixMultIS := 0.95
+						let fixMultR := 0.72
+						let fixMultISR := 0.95
 						;let DefZ := DefZ*-1
+						;print "Classic!"
 					endif
 				else
 					let fixMult := 0.72
-					let fixMultIS := 0.77
+					let fixMultIS := 0.44
+					let fixMultR := 0.72
+					let fixMultISR := 0.44
 					;PrintToConsole "fixMultIS is: %g" fixMultIS
 					;let DefZ := DefZ*-1
 				endif
@@ -569,14 +584,25 @@ begin Function {rVM_Weapon}
 				endif
 				
 
-				if (GetVATSMode <= 0) || IsVats == 0 ;an attempt to fix VATS-related bug, couldn't reproduce it though
+				if ( player.GetCurrentAmmoRounds > 0) && ( (GetVATSMode <= 0) || IsVats == 0 );an attempt to fix VATS-related bug, couldn't reproduce it though
+
+				
 					let VisuaModellRecoilQuest.MinCount := fixMult
 					let VisuaModellRecoilQuest.MinCountI := fixMultIS
 					
-					let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX;*fixMult
-					let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY;*fixMult
+					let VisuaModellRecoilQuest.MinCountR := fixMultR
+					let VisuaModellRecoilQuest.MinCountIR := fixMultISR
 					
-					let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ;*randn;*fixMult
+					
+					let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX/2;*fixMult
+					let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY/2;*fixMult					
+					let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ/2;*randn;*fixMult
+					
+					let VisuaModellRecoilQuest.DefA0R := VisuaModellRecoilQuest.DefA0R + DefX/2;*fixMult
+					let VisuaModellRecoilQuest.DefA1R := VisuaModellRecoilQuest.DefA1R + DefY/2;*fixMult					
+					let VisuaModellRecoilQuest.DefA2R := VisuaModellRecoilQuest.DefA2R + DefZ/2;*randn;*fixMult
+					
+					
 					
 					let VisuaModellRecoilQuest.DefA0C := DefX;*fixMult
 					let VisuaModellRecoilQuest.DefA1C := DefY;*fixMult
