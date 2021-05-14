@@ -41,6 +41,12 @@ begin Function {vSetName}
 		SetINIFloat "Randomization:vFirstShotMultiplierH" VisuaModellRecoilQuestMCM.vFirstShotMH $PresetPath
 		SetINIFloat "Randomization:vFirstShotRandomization" VisuaModellRecoilQuestMCM.vFirstShotR $PresetPath
 		SetINIFloat "Randomization:vFirstShotPeriod" VisuaModellRecoilQuestMCM.vFirstShotP $PresetPath
+		
+		SetINIFloat "Movements:vTiltCoefficient" VisuaModellRecoilQuestMCM.vTiltCoefficient $PresetPath
+		SetINIFloat "Movements:vTiltConstant" VisuaModellRecoilQuestMCM.vTiltConstant $PresetPath
+		SetINIFloat "Movements:vRotCoefficient" VisuaModellRecoilQuestMCM.vRotCoefficient $PresetPath
+		SetINIFloat "Movements:vRotConstant" VisuaModellRecoilQuestMCM.vRotConstant $PresetPath
+
 	endif
 	
 	sv_Destruct vSetName

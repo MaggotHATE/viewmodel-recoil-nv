@@ -85,6 +85,10 @@ float vFirstShotP
 float vUseAmmoPseudo
 
 float vRotationAsVertical
+float vTiltCoefficient
+float vRotCoefficient
+float vTiltConstant
+float vRotConstant
 
 ref JustSprint
 int JustIDX
@@ -101,6 +105,8 @@ float VSzTd
 
 float IsSprintMod
 float ToCamera
+
+short isFixed
 
 string_var ChosenController
 
@@ -134,6 +140,11 @@ begin gamemode
 		set vFirstShotMH to GetINIFloat "Randomization:vFirstShotMultiplierH" "VM_Recoil.ini"
 		set vFirstShotR to GetINIFloat "Randomization:vFirstShotRandomization" "VM_Recoil.ini"
 		set vFirstShotP to GetINIFloat "Randomization:vFirstShotPeriod" "VM_Recoil.ini"
+		
+		set vTiltCoefficient to GetINIFloat "Movements:vTiltCoefficient" "VM_Recoil.ini"
+		set vRotCoefficient to GetINIFloat "Movements:vRotCoefficient" "VM_Recoil.ini"
+		set vTiltConstant to GetINIFloat "Movements:vTiltConstant" "VM_Recoil.ini"
+		set vRotConstant to GetINIFloat "Movements:vRotConstant" "VM_Recoil.ini"
 		
 		;PrintToConsole "getgameloaded is: %g" vVerticalIntensity
 		
@@ -178,6 +189,8 @@ begin gamemode
 	
 	if (IsPC1stPerson == 1 || IsModLoaded "CameraRecoil.esp") && (DefA0 != 0 || DefA1 != 0 || DefA2 != 0 || DefA0R != 0 || DefA2R != 0 || DefA1R != 0)
 	
+		let isFixed := 0
+		
 		if IsPC1stPerson == 1
 			;let DefTrans := player.GetNifBlockRotation "InertiaController"
 			; what?
@@ -240,9 +253,9 @@ begin gamemode
 			let VMyIR := DefTransNEW[2]*MinCountIR + DefA1R*MinCountIR
 			let VMzIR := DefTransNEW[1]*MinCountIR - DefA2R*MinCountIR
 
-			let VMxR := DefTransNEW[0]*MinCountR + DefA0R*MinCountR;*HipNode
-			let VMyR := DefTransNEW[2]*MinCountR + DefA1R*MinCountR;*HipNode
-			let VMzR := DefTransNEW[1]*MinCountR - DefA2R*MinCountR;*HipNode			
+			let VMxR := DefTransNEW[0]*MinCountR + DefA0R*MinCountR
+			let VMyR := DefTransNEW[2]*MinCountR + DefA1R*MinCountR
+			let VMzR := DefTransNEW[1]*MinCountR - DefA2R*MinCountR			
 			
 			if VMxR < 0.00001 && VMxR > -0.00001 
 				let VMxR := 0
@@ -338,12 +351,13 @@ begin gamemode
 		; print "DefA1="+$DefA1 +" " + $VMy
 		; print "DefA2="+$DefA2 +" " + $VMz
 		
-	elseif (DefA0 == 0 || DefA1 == 0 || DefA2 == 0) && (VMx != 0 || VMy != 0 || VMz != 0) 
+	elseif isFixed == 0 && (DefA0 == 0 || DefA1 == 0 || DefA2 == 0) && (VMx != 0 || VMy != 0 || VMz != 0) 
 		if MinCount < MinCountR
 			player.SetNifBlockRotation"NeckController" 0 0 0
 		else
 			player.SetNifBlockRotation "InertiaController" 0 0 0	
 		endif
+		let isFixed := 1
 	endif
 
 	

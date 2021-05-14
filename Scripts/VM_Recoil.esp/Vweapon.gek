@@ -98,6 +98,11 @@ float vFirstShotR
 float vFirstShotP
 float vFirstShotV
 float vFirstShotH
+float vTiltCoefficient
+float vRotCoefficient
+float vTiltConstant
+float vRotConstant
+
 
 float vRotationAsVertical
 
@@ -134,6 +139,10 @@ begin Function {rVM_Weapon}
 			set vFirstShotP to GetINIFloat "Randomization:vFirstShotPeriod" "VM_Recoil.ini"
 			set vFirstShotR to GetINIFloat "Randomization:vFirstShotRandomization" "VM_Recoil.ini"
 			set vRotationAsVertical to GetINIFloat "Randomization:vRotationAsVertical" "VM_Recoil.ini"
+			set vTiltCoefficient to GetINIFloat "Movements:vTiltCoefficient" "VM_Recoil.ini"
+			set vRotCoefficient to GetINIFloat "Movements:vRotCoefficient" "VM_Recoil.ini"
+			set vTiltConstant to GetINIFloat "Movements:vTiltConstant" "VM_Recoil.ini"
+			set vRotConstant to GetINIFloat "Movements:vRotConstant" "VM_Recoil.ini"
 			
 		else
 		
@@ -159,6 +168,10 @@ begin Function {rVM_Weapon}
 			set vFirstShotMH to VisuaModellRecoilQuest.vFirstShotMH
 			set vFirstShotP to VisuaModellRecoilQuest.vFirstShotP
 			set vFirstShotR to VisuaModellRecoilQuest.vFirstShotR
+			set vTiltCoefficient to VisuaModellRecoilQuest.vTiltCoefficient
+			set vRotCoefficient to VisuaModellRecoilQuest.vRotCoefficient
+			set vTiltConstant to VisuaModellRecoilQuest.vTiltConstant
+			set vRotConstant to VisuaModellRecoilQuest.vRotConstant
 			
 		endif
 		
@@ -316,6 +329,8 @@ begin Function {rVM_Weapon}
 					;PrintToConsole "projSpeed is: %g" projSpeed
 					
 					let wDam *= projDam*projSpeed
+				elseif wSkillType == 34
+					let wDam *= 5
 				endif
 				
 
@@ -593,14 +608,25 @@ begin Function {rVM_Weapon}
 					let VisuaModellRecoilQuest.MinCountR := fixMultR
 					let VisuaModellRecoilQuest.MinCountIR := fixMultISR
 					
+					if vRotConstant < 1
+						let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX*vRotCoefficient
+						let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY*vRotCoefficient			
+						let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ*vRotCoefficient
+					else
+						let VisuaModellRecoilQuest.DefA0 := DefX*vRotCoefficient
+						let VisuaModellRecoilQuest.DefA1 := DefY*vRotCoefficient			
+						let VisuaModellRecoilQuest.DefA2 := DefZ*vRotCoefficient
+					endif
 					
-					let VisuaModellRecoilQuest.DefA0 := VisuaModellRecoilQuest.DefA0 + DefX/2;*fixMult
-					let VisuaModellRecoilQuest.DefA1 := VisuaModellRecoilQuest.DefA1 + DefY/2;*fixMult					
-					let VisuaModellRecoilQuest.DefA2 := VisuaModellRecoilQuest.DefA2 + DefZ/2;*randn;*fixMult
-					
-					let VisuaModellRecoilQuest.DefA0R := VisuaModellRecoilQuest.DefA0R + DefX/2;*fixMult
-					let VisuaModellRecoilQuest.DefA1R := VisuaModellRecoilQuest.DefA1R + DefY/2;*fixMult					
-					let VisuaModellRecoilQuest.DefA2R := VisuaModellRecoilQuest.DefA2R + DefZ/2;*randn;*fixMult
+					if vTiltConstant < 1
+						let VisuaModellRecoilQuest.DefA0R := VisuaModellRecoilQuest.DefA0R + DefX*vTiltCoefficient
+						let VisuaModellRecoilQuest.DefA1R := VisuaModellRecoilQuest.DefA1R + DefY*vTiltCoefficient			
+						let VisuaModellRecoilQuest.DefA2R := VisuaModellRecoilQuest.DefA2R + DefZ*vTiltCoefficient
+					else
+						let VisuaModellRecoilQuest.DefA0R := DefX*vTiltCoefficient;*fixMult
+						let VisuaModellRecoilQuest.DefA1R := DefY*vTiltCoefficient;*fixMult					
+						let VisuaModellRecoilQuest.DefA2R := DefZ*vTiltCoefficient;*randn;*fixMult					
+					endif
 					
 					
 					

@@ -42,6 +42,12 @@ begin Function {vButton}
 	set VisuaModellRecoilQuestMCM.vFirstShotR to GetINIFloat "Randomization:vFirstShotRandomization" $PresetPath
 	set VisuaModellRecoilQuestMCM.vFirstShotP to GetINIFloat "Randomization:vFirstShotPeriod" $PresetPath
 	
+	set VisuaModellRecoilQuestMCM.vTiltCoefficient to GetINIFloat "Movements:vTiltCoefficient" $PresetPath
+	set VisuaModellRecoilQuestMCM.vTiltConstant to GetINIFloat "Movements:vTiltConstant" $PresetPath
+	set VisuaModellRecoilQuestMCM.vRotCoefficient to GetINIFloat "Movements:vRotCoefficient" $PresetPath
+	set VisuaModellRecoilQuestMCM.vRotConstant to GetINIFloat "Movements:vRotConstant" $PresetPath
+	
+	
 	SetINIFloat "General:vVerticalIntensity" VisuaModellRecoilQuestMCM.vVerticalIntensity "VM_Recoil.ini"
 	SetINIFloat "General:vHorizontalIntensity" VisuaModellRecoilQuestMCM.vHorizontalIntensity "VM_Recoil.ini"
 	SetINIFloat "General:vWeaponDamageCoeff" VisuaModellRecoilQuestMCM.vWeaponDamageCoeff "VM_Recoil.ini"
@@ -70,6 +76,11 @@ begin Function {vButton}
 	SetINIFloat "Randomization:vFirstShotMultiplierH" VisuaModellRecoilQuestMCM.vFirstShotMH "VM_Recoil.ini"
 	SetINIFloat "Randomization:vFirstShotRandomization" VisuaModellRecoilQuestMCM.vFirstShotR "VM_Recoil.ini"
 	SetINIFloat "Randomization:vFirstShotPeriod" VisuaModellRecoilQuestMCM.vFirstShotP "VM_Recoil.ini"
+	
+	SetINIFloat "Movements:vTiltCoefficient" VisuaModellRecoilQuestMCM.vTiltCoefficient "VM_Recoil.ini"
+	SetINIFloat "Movements:vTiltConstant" VisuaModellRecoilQuestMCM.vTiltConstant "VM_Recoil.ini"
+	SetINIFloat "Movements:vRotCoefficient" VisuaModellRecoilQuestMCM.vRotCoefficient "VM_Recoil.ini"
+	SetINIFloat "Movements:vRotConstant" VisuaModellRecoilQuestMCM.vRotConstant "VM_Recoil.ini"
 	
 	SetUIFloat "StartMenu/MCM/_Reset" 1
 	
