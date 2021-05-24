@@ -110,6 +110,8 @@ float timer
 
 string_var ChosenController
 
+short isLastShot
+
 begin Function {rVM_Weapon}
 
 	if IsPC1stPerson == 1 || IsModLoaded "CameraRecoil.esp" ; let's try to make TPS recoil work properly
@@ -330,7 +332,7 @@ begin Function {rVM_Weapon}
 					
 					let wDam *= projDam*projSpeed
 				elseif wSkillType == 34
-					let wDam *= 5
+					let wDam *= 2
 				endif
 				
 
@@ -598,10 +600,14 @@ begin Function {rVM_Weapon}
 					endif
 				endif
 				
-
-				if ( player.GetCurrentAmmoRounds > 0) && ( (GetVATSMode <= 0) || IsVats == 0 );an attempt to fix VATS-related bug, couldn't reproduce it though
-
+				if ( player.GetCurrentAmmoRounds > 0)
+					let VisuaModellRecoilQuest.isLastShot := 1
+				endif
 				
+				;print "isLastShot0="+$VisuaModellRecoilQuest.isLastShot
+
+				if VisuaModellRecoilQuest.isLastShot == 1 && ( (GetVATSMode <= 0) || IsVats == 0 );an attempt to fix VATS-related bug, couldn't reproduce it though
+
 					let VisuaModellRecoilQuest.MinCount := fixMult
 					let VisuaModellRecoilQuest.MinCountI := fixMultIS
 					
@@ -640,6 +646,12 @@ begin Function {rVM_Weapon}
 				
 					call VMRhandler rVM_Weapon DefX DefY DefZ
 				endif
+				
+				if ( player.GetCurrentAmmoRounds == 0)
+					let VisuaModellRecoilQuest.isLastShot := 0
+				endif
+				
+				;print "isLastShot1="+$VisuaModellRecoilQuest.isLastShot
 				
 				; let vSelf := GetCurrentScript
 				

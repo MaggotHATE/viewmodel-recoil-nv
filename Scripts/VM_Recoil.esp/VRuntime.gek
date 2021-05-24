@@ -110,6 +110,8 @@ short isFixed
 
 string_var ChosenController
 
+short isLastShot
+
 begin gamemode
 
 	if getgameloaded

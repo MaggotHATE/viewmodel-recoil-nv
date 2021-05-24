@@ -33,13 +33,13 @@ begin Function {rDam}
 		let CurAmName := GetEditorID CurAm
 		let CurAmDiameterCorr := 1
 		;let CurAmNameSym := Ar_DeepCopy CurAmName
-		;Print "CurAmName is: " + $CurAmName
+		;Print "CurAmName 1 is: " + $CurAmName
 		
 		Sv_Replace "Ammo|",CurAmName
 		Sv_Replace "ammo|",CurAmName
 		let CurAmNameDig := sv_length CurAmName
 		;Print "CurAmNameDig is: " + $CurAmNameDig
-		;Print "CurAmName is: " + $CurAmName
+		;Print "CurAmName 2 is: " + $CurAmName
 		let CurAmDiameter := 0
 		if (Sv_Find "x", CurAmName) > -1
 			let CurAmNameMetr := Sv_Find "x", CurAmName
@@ -218,10 +218,18 @@ begin Function {rDam}
 		else
 			let CurAmDiameter := 1
 			let CurAmDiameterCorr := 1
-			;Print "Weird ammo huh " + $CurAmName
+			if isDebug
+				Print "Weird ammo huh " + $CurAmName
+			endif
 		endif	
 	
-	let rDam *= CurAmDiameterCorr*CurAmDiameter/9
+	if CurAmDiameterCorr == 1 && CurAmDiameter == 1
+		if isDebug
+			Print "Nothing useful from " + $CurAmName
+		endif
+	else
+		let rDam *= CurAmDiameterCorr*CurAmDiameter/9
+	endif
 	
 	SetFunctionValue rDam
 	
